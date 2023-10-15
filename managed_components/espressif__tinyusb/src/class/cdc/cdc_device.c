@@ -73,8 +73,6 @@ typedef struct
 
 #define ITF_MEM_RESET_SIZE   offsetof(cdcd_interface_t, wanted_char)
 
-
-
 //--------------------------------------------------------------------+
 // INTERNAL OBJECT & FUNCTION DECLARATION
 //--------------------------------------------------------------------+
@@ -114,7 +112,6 @@ static bool _prep_out_transaction (cdcd_interface_t* p_cdc)
 //--------------------------------------------------------------------+
 bool tud_cdc_n_connected(uint8_t itf)
 {
-  printf("HOANG: %s",__func__);
   // DTR (bit 0) active  is considered as connected
   return tud_ready() && tu_bit_test(_cdcd_itf[itf].line_state, 0);
 }
@@ -240,7 +237,7 @@ void cdcd_init(void)
     p_cdc->line_coding.stop_bits = 0;
     p_cdc->line_coding.parity    = 0;
     p_cdc->line_coding.data_bits = 8;
-    p_cdc->line_state            = 3;
+
     // Config RX fifo
     tu_fifo_config(&p_cdc->rx_ff, p_cdc->rx_ff_buf, TU_ARRAY_SIZE(p_cdc->rx_ff_buf), 1, false);
 
@@ -271,7 +268,6 @@ void cdcd_reset(uint8_t rhport)
 
 uint16_t cdcd_open(uint8_t rhport, tusb_desc_interface_t const * itf_desc, uint16_t max_len)
 {
-  
   // Only support ACM subclass
   TU_VERIFY( TUSB_CLASS_CDC                           == itf_desc->bInterfaceClass &&
              CDC_COMM_SUBCLASS_ABSTRACT_CONTROL_MODEL == itf_desc->bInterfaceSubClass, 0);
@@ -303,7 +299,6 @@ uint16_t cdcd_open(uint8_t rhport, tusb_desc_interface_t const * itf_desc, uint1
 
   if ( TUSB_DESC_ENDPOINT == tu_desc_type(p_desc) )
   {
-    printf("hoang-------------\n");
     // notification endpoint
     tusb_desc_endpoint_t const * desc_ep = (tusb_desc_endpoint_t const *) p_desc;
 
@@ -484,8 +479,6 @@ bool cdcd_xfer_cb(uint8_t rhport, uint8_t ep_addr, xfer_result_t result, uint32_
 
   return true;
 }
-
-
 void set_dsr(uint8_t itf, bool value) {
 
     printf("HOANG: %s %d\n",__func__,value);
@@ -507,5 +500,4 @@ void set_dsr(uint8_t itf, bool value) {
     usbd_edpt_xfer(TUD_OPT_RHPORT, p_cdc->ep_notif, packet, 10);
 
 }
-
 #endif
