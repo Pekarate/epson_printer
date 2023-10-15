@@ -1,0 +1,24 @@
+-- IDF_TARGET is not set, guessed 'esp32s3' from sdkconfig 'C:/Espressif/frameworks/esp-idf-v5.1.1/examples/peripherals/usb/device/tusb_serial_device/sdkconfig'
+-- Found Git: C:/Espressif/tools/idf-git/2.39.2/cmd/git.exe (found version "2.39.2.windows.1") 
+-- ccache will be used for faster recompilation
+-- The C compiler identification is GNU 12.2.0
+-- The CXX compiler identification is GNU 12.2.0
+-- The ASM compiler identification is GNU
+-- Found assembler: C:/Espressif/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-gcc.exe
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Espressif/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-gcc.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Espressif/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-g++.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Building ESP-IDF components for target esp32s3
+Processing 3 dependencies:
+[1/3] espressif/esp_tinyusb (1.4.2)
+[2/3] espressif/tinyusb (0.15.0~3)
+[3/3] idf (5.1.1)
+-- Configuring incomplete, errors occurred!
+See also "C:/Espressif/frameworks/esp-idf-v5.1.1/examples/peripherals/usb/device/tusb_serial_device/build/CMakeFiles/CMakeOutput.log".
