@@ -5,6 +5,9 @@
 #include "string.h"
 
 #include "esp_log.h"
+
+#include "epson_nv_memory.h"
+
 static const char *TAG = "ESCPOS";
 
 void horizontal_tab(void *arg);
@@ -63,7 +66,7 @@ void enable_disable_real_time_command(void *arg);
 void set_user_setup_commands(void *arg);
 void request_transmission_of_response_or_status(void *arg);
 void select_print_control_method_s_(void *arg);
-void define_nv_bit_image(void *arg);
+void transmit_remaining_capacity_NV_memory(void *arg);
 void select_character_effects(void *arg);
 void set_up_and_print_the_symbol(void *arg);
 void set_absolute_vertical_print_position_in_page_mode(void *arg);
@@ -156,7 +159,8 @@ __ESCPOS_callbak escpos[] = {
     {.keysize = 3, .key = {GS,'(','E'}         ,.callback =set_user_setup_commands},
     {.keysize = 3, .key = {GS,'(','H'}         ,.callback =request_transmission_of_response_or_status},
     {.keysize = 3, .key = {GS,'(','K'}         ,.callback =select_print_control_method_s_},
-    {.keysize = 3, .key = {GS,'(','L'}         ,.callback =define_nv_bit_image},
+    {.keysize = 7, .key = {GS,'(','L',0x02,0x00,0x30,0x03}         ,.callback =transmit_remaining_capacity_NV_memory},
+    {.keysize = 7, .key = {GS,'(','L',0x02,0x00,0x30,51}         ,.callback =transmit_remaining_capacity_NV_memory},
     {.keysize = 3, .key = {GS,'(','N'}         ,.callback =select_character_effects},
     {.keysize = 3, .key = {GS,'(','k'}         ,.callback =set_up_and_print_the_symbol},
     {.keysize = 2, .key = {GS,'$'}             ,.callback =set_absolute_vertical_print_position_in_page_mode},
@@ -202,15 +206,20 @@ __PR_typedef_result esc_pos_check_command(__ESCPOS_callbak cmd,_frame_typedef fr
 }
 
 void esc_pos_check_frame(_frame_typedef frame) {
+    int i =0;
     int ss = sizeof(escpos) / sizeof (__ESCPOS_callbak);
-    for(int i =0;i<ss;i++)
+    for(i =0;i<ss;i++)
     {
         // ESP_LOGI(TAG,"%d",escpos[i].keysize);
         if(esc_pos_check_command(escpos[i],frame) == PR_OK){
             if(escpos[i].callback != NULL) {
                 escpos[i].callback(&frame);
             }
+            break;
         }
+    }
+    if (i==ss) {
+        ESP_LOGW(TAG,"not support this fuction");
     }
 }
 
@@ -232,6 +241,30 @@ void cancel_print_data_in_page_mode(void *arg) {
 }
 void transmit_real_time_status(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
+    _frame_typedef *frame = (_frame_typedef *)arg; 
+    // if(frame->len !=4) {
+    //     ESP_LOGE(TAG,"%s LEN NOT MATCH",__func__);
+    //     return;
+    // }
+    uint8_t ret_code = 0;
+    switch (frame->data[2])
+    {
+        case 1:
+            ret_code = 0x16;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            ret_code = 0x12;
+            break;
+        default:
+            break;
+    }
+    if (ret_code)
+    {
+        epson_response_to_host(&ret_code,1);
+    }
+    
 }
 void send_real_time_request_to_printer(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
@@ -244,6 +277,8 @@ void execute_power_off_sequence(void *arg) {
 }
 void clear_buffer_s_(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
+    uint8_t rsp[3] = {0x37,0x25,0x00};
+    epson_response_to_host(rsp,3);
 }
 void print_data_in_page_mode(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
@@ -383,8 +418,14 @@ void request_transmission_of_response_or_status(void *arg) {
 void select_print_control_method_s_(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
 }
-void define_nv_bit_image(void *arg) {
+void transmit_remaining_capacity_NV_memory(void *arg) {
+
     ESP_LOGI(TAG,"%s",__func__);
+    int remain = epson_nv_get_remaining_size();
+    char tmp[15]
+    int len = sprintf(tmp,"31%s",remain);
+    epson_response_to_host(tmp,len+1);
+    
 }
 void select_character_effects(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
@@ -414,6 +455,8 @@ void select_print_position_of_hri_characters(void *arg) {
 //{37}{25}{00}{14}{00}{00}{0F}{5F}{54}{4D}{2D}{54}{38}{38}{56}{00}
 void transmit_printer_id(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
+    uint8_t rsp[] = {0x5F, 0x54, 0x4D, 0x2D, 0x54, 0x38, 0x38, 0x56, 0x00};
+    epson_response_to_host(rsp,9);
 }
 void set_left_margin(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
@@ -435,6 +478,9 @@ void execute_macro(void *arg) {
 }
 void enable_disable_automatic_status_back__asb_(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
+    // return;
+    uint8_t rsp[] = {0x14, 0x00, 0x00, 0x0F};
+    epson_response_to_host(rsp,4);
 }
 void turn_smoothing_mode_on_off(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
@@ -456,6 +502,25 @@ void print_bar_code(void *arg) {
 }
 void transmit_status(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);
+    _frame_typedef *newframe = (_frame_typedef *)arg;
+    if(newframe->len != 3) {
+        ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+    }
+    uint8_t res =0;
+    switch (newframe->data[2])
+    {   
+        case 1:
+        case 49:
+            res = 0x00;
+            break;
+        case 2:
+        case 50:
+            res = 0x00;
+            break;
+        default:
+            break;
+    }
+    epson_response_to_host(&res,1);
 }
 void print_raster_bit_image(void *arg) {
     ESP_LOGI(TAG,"%s",__func__);

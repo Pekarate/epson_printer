@@ -21,7 +21,7 @@
 #define GS                  0x1D
 
 typedef struct {
-	uint8_t key[5];
+	uint8_t key[10];
     uint8_t keysize;
     char  fn_name[100];
 	void (*callback)(void *arg);
@@ -31,6 +31,9 @@ typedef enum {
     PR_OK =0,
     PR_ERR,
 }__PR_typedef_result;
+
+
+void epson_response_to_host(uint8_t *buf,uint16_t rx_size);
 
 void esc_pos_check_frame(_frame_typedef frame);
 #endif

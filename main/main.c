@@ -15,12 +15,29 @@
 #include "device/usbd.h"
 #include "device/usbd_pvt.h"
 
+#include "queue.h"
+
 #include "define.h"
 #include "escpos.h"
 
+extern void set_dsr(uint8_t itf, bool value);
 static const char *TAG = "example";
 static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
 
+
+void epson_response_to_host(uint8_t *buf,uint16_t rx_size){
+    if(tinyusb_cdcacm_write_queue(0, buf, rx_size) != rx_size) {
+        ESP_LOGE(TAG,"tinyusb_cdcacm_write_queue failse");
+    }
+    if(tinyusb_cdcacm_write_flush(0, 1000) != 0) {
+        ESP_LOGE(TAG,"tinyusb_cdcacm_write_flush failse");
+    } else {
+        ESP_LOGI(TAG,"tinyusb_cdcacm_write_flush done");
+    }
+}
+
+
+QueueHandle_t xStructQueue = NULL;
 
 void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
 {
@@ -30,12 +47,11 @@ void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
     /* read */
     esp_err_t ret = tinyusb_cdcacm_read(itf, buf, CONFIG_TINYUSB_CDC_RX_BUFSIZE, &rx_size);
     if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "Data from channel %d:", itf);
-        ESP_LOG_BUFFER_HEXDUMP(TAG, buf, rx_size, ESP_LOG_INFO);
+        // ESP_LOGI(TAG, "Data from channel %d:", itf);
         _frame_typedef newframe;
         newframe.data = buf;
         newframe.len = rx_size;
-        esc_pos_check_frame(newframe);
+        xQueueSend(xStructQueue,( void * ) &newframe,( TickType_t ) 100 );
     } else {
         ESP_LOGE(TAG, "Read error");
     }
@@ -66,14 +82,29 @@ void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
 //     usbd_edpt_xfer(TUD_OPT_RHPORT, p_cdc->ep_notif, packet, 10);
 
 // }
-extern void set_dsr(uint8_t itf, bool value);
 
+uint8_t XON = 0x11;
+int dtr = 0;
 void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event)
 {
-    int dtr = event->line_state_changed_data.dtr;
+    dtr = event->line_state_changed_data.dtr;
     int rts = event->line_state_changed_data.rts;
     ESP_LOGI(TAG, "Line state changed on channel %d: DTR:%d, RTS:%d", itf, dtr, rts);
-    set_dsr(itf,!dtr);
+    // set_dsr(itf,dtr);
+    // if(dtr){
+    //         vTaskDelay(5);
+    //         ESP_LOGI("HARDWARE","%s %d",__func__,0);
+    //         set_dsr(itf,0);
+    //         ESP_LOGI("HARDWARE","%s %d",__func__,1);
+    //         set_dsr(itf,1);
+           
+    // }
+    // else {
+    //         ESP_LOGI("HARDWARE","%s %d",__func__,0);
+    //         set_dsr(itf,0);
+    // }
+
+
 }
 
 void app_main(void)
@@ -115,4 +146,30 @@ void app_main(void)
 #endif
 
     ESP_LOGI(TAG, "USB initialization DONE");
+    xStructQueue = xQueueCreate(
+                         /* The number of items the queue can hold. */
+                         10,
+                         /* Size of each item is big enough to hold the
+                         whole structure. */
+                         sizeof( _frame_typedef) );
+    vTaskDelay(100);
+    // set_dsr(0,1);
+    _frame_typedef newframe;
+    while (1)
+    {
+        // if(dtr){
+        //     for(int i =0;i<10 ;i++)
+        //     {
+        //         vTaskDelay(100);
+        //         epson_response_to_host(&XON,1);
+        //     }
+        // }
+        if( xQueueReceive( xStructQueue,&(newframe),( TickType_t ) 10 ) == pdPASS )
+        {
+            ESP_LOG_BUFFER_HEXDUMP(TAG, newframe.data, newframe.len, ESP_LOG_INFO);
+            esc_pos_check_frame(newframe);
+        }
+        vTaskDelay(1);
+    }
+    
 }
