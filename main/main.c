@@ -20,24 +20,50 @@
 #include "define.h"
 #include "escpos.h"
 
+#include "my_timer.h"
+#include "my_uart.h"
+#include "my_gpio.h"
+
+QueueHandle_t xStructQueue = NULL;
 extern void set_dsr(uint8_t itf, bool value);
 static const char *TAG = "example";
 static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
 
 
+
+void timer_1_ms_callback(void){
+    static uint32_t cnt = 0;
+    cnt++;
+    static size_t length = 0;
+    static size_t now_length = 0;
+    ESP_ERROR_CHECK(uart_get_buffered_data_len(UART_PORT_NUM,&now_length));
+    if(now_length != length) {
+        length = now_length;
+    } else if(now_length) 
+    {
+        _frame_typedef newframe;
+        newframe.data = (uint8_t *)malloc(now_length+1);
+        uart_read_bytes(UART_PORT_NUM, newframe.data, now_length, 100 / portTICK_PERIOD_MS);
+        newframe.len = now_length;
+        xQueueSend(xStructQueue,( void * ) &newframe,( TickType_t ) 100 );
+        now_length = length = 0;
+    }
+}
+
 void epson_response_to_host(uint8_t *buf,uint16_t rx_size){
+    ESP_LOG_BUFFER_HEXDUMP("SEND", buf, rx_size, ESP_LOG_INFO);
     if(tinyusb_cdcacm_write_queue(0, buf, rx_size) != rx_size) {
         ESP_LOGE(TAG,"tinyusb_cdcacm_write_queue failse");
     }
     if(tinyusb_cdcacm_write_flush(0, 1000) != 0) {
         ESP_LOGE(TAG,"tinyusb_cdcacm_write_flush failse");
     } else {
-        ESP_LOGI(TAG,"tinyusb_cdcacm_write_flush done");
+        // ESP_LOGI(TAG,"tinyusb_cdcacm_write_flush done");
     }
 }
 
 
-QueueHandle_t xStructQueue = NULL;
+
 
 void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
 {
@@ -49,7 +75,8 @@ void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
     if (ret == ESP_OK) {
         // ESP_LOGI(TAG, "Data from channel %d:", itf);
         _frame_typedef newframe;
-        newframe.data = buf;
+        newframe.data = (uint8_t *)malloc(rx_size+1);
+        memcpy(newframe.data,buf,rx_size);
         newframe.len = rx_size;
         xQueueSend(xStructQueue,( void * ) &newframe,( TickType_t ) 100 );
     } else {
@@ -144,7 +171,7 @@ void app_main(void)
                         CDC_EVENT_LINE_STATE_CHANGED,
                         &tinyusb_cdc_line_state_changed_callback));
 #endif
-
+    
     ESP_LOGI(TAG, "USB initialization DONE");
     xStructQueue = xQueueCreate(
                          /* The number of items the queue can hold. */
@@ -152,9 +179,13 @@ void app_main(void)
                          /* Size of each item is big enough to hold the
                          whole structure. */
                          sizeof( _frame_typedef) );
+    my_uart_start();
+    my_timer_start();
+    my_gpio_init();
     vTaskDelay(100);
     // set_dsr(0,1);
     _frame_typedef newframe;
+    
     while (1)
     {
         // if(dtr){
@@ -165,11 +196,28 @@ void app_main(void)
         //     }
         // }
         if( xQueueReceive( xStructQueue,&(newframe),( TickType_t ) 10 ) == pdPASS )
-        {
-            ESP_LOG_BUFFER_HEXDUMP(TAG, newframe.data, newframe.len, ESP_LOG_INFO);
-            esc_pos_check_frame(newframe);
+        {   
+            int c =0;
+            for( c=0;c< newframe.len;c++)
+            {
+                if(newframe.data[c])
+                    break;
+            }
+            if(c != newframe.len) {
+                ESP_LOG_BUFFER_HEXDUMP("RECV: ", newframe.data, newframe.len, ESP_LOG_INFO);
+                esc_pos_check_frame(newframe);
+            } else {
+                ESP_LOGI(TAG, "message %d byte: full 0",newframe.data[c]);
+            }
+            
+            free(newframe.data);
         }
         vTaskDelay(1);
     }
     
 }
+
+
+/*I (1718774) example: 0x3fca1d2c   00 00 00 00 1b 3d 01                              |.....=.|
+W (1718774) ESCPOS: not support this fuction
+I (1719304) example: 0x3fca1d2c   1b 3d 01 10 04 01 10 14  07 01                    |.=........|*/

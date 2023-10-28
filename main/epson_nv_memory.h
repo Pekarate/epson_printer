@@ -6,4 +6,5 @@
 
 
 int epson_nv_get_remaining_size();
+int epson_nv_get_size();
 #endif

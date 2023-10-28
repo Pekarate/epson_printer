@@ -1,0 +1,331 @@
+22/10/2023@08:22:38.195::Packet[00000056l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 10 bytes.
+10 14 08 01 03 14 01 06 02 08                               
+
+22/10/2023@08:22:40.200::Packet[00000057l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:40.319::Packet[00000058l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 3 bytes.
+1D 49 43                                            I C
+
+22/10/2023@08:22:40.331::Packet[00000042l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 9 bytes.
+5F 54 4D 2D 54 38 38 56 00                         _ T M - T 8 8 V 
+
+22/10/2023@08:22:41.509::Packet[00000059l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:41.816::Packet[00000060l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 3 bytes.
+1D 49 01                                            I 
+
+22/10/2023@08:22:41.818::Packet[00000043l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 1 byte.
+20                                                  
+
+22/10/2023@08:22:41.906::Packet[00000061l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 10 bytes.
+1D 28 45 02 00 62 01 1D 72 01                       ( E   b   r 
+
+22/10/2023@08:22:41.906::Packet[00000044l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 1 byte.
+00                                                 
+
+22/10/2023@08:22:42.351::Packet[00000062l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:42.461::Packet[00000063l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 3 bytes.
+1D 49 43                                            I C
+
+22/10/2023@08:22:42.471::Packet[00000045l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 9 bytes.
+5F 54 4D 2D 54 38 38 56 00                         _ T M - T 8 8 V 
+
+22/10/2023@08:22:42.514::Packet[00000064l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 9 bytes.
+1D 49 01 1D 49 43 1D 49 42                          I   I C  I B
+
+22/10/2023@08:22:42.618::Packet[00000046l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 57 bytes.
+20 5F 54 4D 2D 54 38 38 56 00 5F 45 50 53 4F 4E      _ T M - T 8 8 V  _ E P S O N
+00 5F 54 45 53 46 38 30 37 31 30 31 00 5F 33 30     _ T E S F 8 0 7 1 0 1  _ 3 0
+2E 32 31 20 45 53 43 2F 50 4F 53 00 5F 00 5F 40    . 2 1   E S C / P O S  _  _ @
+44 40 40 00 3D 60 49 00 00                         D @ @  = ` I  
+
+22/10/2023@08:22:42.618::Packet[00000065l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 18 bytes.
+1D 49 44 1D 49 41 1D 49 45 1D 49 6F 1D 49 60 1D     I D  I A  I E  I o  I ` 
+72 01                                              r 
+
+22/10/2023@08:22:42.678::Packet[00000047l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 27 bytes.
+37 31 32 36 32 31 34 34 00 37 30 32 36 32 31 34    7 1 2 6 2 1 4 4  7 0 2 6 2 1 4
+34 00 37 30 32 36 32 31 34 34 00                   4  7 0 2 6 2 1 4 4 
+
+22/10/2023@08:22:42.678::Packet[00000066l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 21 bytes.
+1D 28 4C 02 00 30 03 1D 28 4C 02 00 30 00 1D 28     ( L   0   ( L   0   (
+4C 02 00 30 00                                     L   0 
+
+22/10/2023@08:22:42.736::Packet[00000067l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 33 bytes.
+1D 28 4C 04 00 30 40 4B 43 18 1D 28 45 02 00 06     ( L   0 @ K C   ( E   
+03 1C 28 45 03 00 3D 02 30 1C 28 45 03 00 3D 02      ( E   =  0  ( E   = 
+31                                                 1
+
+22/10/2023@08:22:42.790::Packet[00000049l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 29 bytes.
+37 48 32 31 00 37 27 31 30 31 1F 30 00 37 27 31    7 H 2 1  7 ' 1 0 1  0  7 ' 1
+30 32 1F 30 00 37 27 31 30 33 1F 30 00             0 2  0  7 ' 1 0 3  0 
+
+22/10/2023@08:22:42.858::Packet[00000050l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 24 bytes.
+37 27 31 30 34 1F 30 00 37 27 31 30 35 1F 30 00    7 ' 1 0 4  0  7 ' 1 0 5  0 
+37 27 31 30 30 1F 30 00                            7 ' 1 0 0  0 
+
+22/10/2023@08:22:42.858::Packet[00000069l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 29 bytes.
+1D 28 45 02 00 06 68 1D 28 45 02 00 06 69 1D 28     ( E    h  ( E    i  (
+45 02 00 06 64 1C 28 45 03 00 3D 02 30             E    d  ( E   =  0
+
+22/10/2023@08:22:42.935::Packet[00000070l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 33 bytes.
+1C 28 45 03 00 3D 02 31 1C 28 45 03 00 3D 02 32     ( E   =  1  ( E   =  2
+1D 28 4C 04 00 30 40 4B 43 18 1D 28 45 02 00 06     ( L   0 @ K C   ( E   
+03                                                 
+
+22/10/2023@08:22:43.020::Packet[00000071l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 31 bytes.
+1D 28 45 02 00 06 05 1D 28 45 02 00 06 06 1D 28     ( E      ( E      (
+45 02 00 06 61 1D 49 72 1D 28 45 02 00 06 62       E    a  I r  ( E    b
+
+
+22/10/2023@08:22:43.085::Packet[00000072l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 28 bytes.
+1D 28 45 02 00 06 75 1D 28 45 02 00 06 6F 1D 28     ( E    u  ( E    o  (
+45 02 00 06 70 1D 28 45 02 00 06 08                E    p  ( E    
+
+
+
+22/10/2023@08:22:43.158::Packet[00000073l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 28 bytes.
+1D 28 45 02 00 06 09 1D 28 45 02 00 06 77 1D 28     ( E      ( E    w  (
+45 02 00 06 78 1D 28 45 02 00 06 79                E    x  ( E    y
+
+22/10/2023@08:22:43.233::Packet[00000074l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 28 bytes.
+1D 28 45 02 00 06 7A 1D 28 45 02 00 06 7B 1D 28     ( E    z  ( E    {  (
+45 02 00 06 7C 1D 28 45 02 00 06 7D                E       ( E    }
+
+ 1 
+37 27 31 32 35 1F 32 00                            7 ' 1 2 5  2 
+
+22/10/2023@08:22:43.310::Packet[00000056l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 36 bytes.
+37 27 31 32 36 1F 31 00 37 27 31 30 1F 30 00 37    7 ' 1 2 6  1  7 ' 1 0  0  7
+52 31 1F 31 00 5F 40 44 40 40 00 37 33 31 1F 39    R 1  1  _ @ D @ @  7 3 1  9
+36 30 30 00                                        6 0 0 
+
+22/10/2023@08:22:44.954::Packet[00000076l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:46.349::Packet[00000077l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:46.351::Packet[00000057l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 4 bytes.
+14 00 00 0F                                           
+
+22/10/2023@08:22:46.613::Packet[00000078l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 3 bytes.
+1D 49 43                                            I C
+
+22/10/2023@08:22:46.625::Packet[00000058l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 9 bytes.
+5F 54 4D 2D 54 38 38 56 00                         _ T M - T 8 8 V 
+
+22/10/2023@08:22:46.639::Packet[00000059l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 1 byte.
+20                                                  
+
+22/10/2023@08:22:46.639::Packet[00000079l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 6 bytes.
+1D 49 01 1D 49 43                                   I   I C
+
+22/10/2023@08:22:46.663::Packet[00000080l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 3 bytes.
+1D 49 42                                            I B
+
+22/10/2023@08:22:46.663::Packet[00000060l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 16 bytes.
+5F 54 4D 2D 54 38 38 56 00 5F 45 50 53 4F 4E 00    _ T M - T 8 8 V  _ E P S O N 
+
+22/10/2023@08:22:46.678::Packet[00000081l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 3 bytes.
+1D 49 44                                            I D
+
+22/10/2023@08:22:46.682::Packet[00000061l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 12 bytes.
+5F 54 45 53 46 38 30 37 31 30 31 00                _ T E S F 8 0 7 1 0 1 
+
+22/10/2023@08:22:46.707::Packet[00000062l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 15 bytes.
+5F 33 30 2E 32 31 20 45 53 43 2F 50 4F 53 00       _ 3 0 . 2 1   E S C / P O S 
+
+22/10/2023@08:22:46.707::Packet[00000082l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 6 bytes.
+1D 49 41 1D 49 45                                   I A  I E
+
+22/10/2023@08:22:46.730::Packet[00000083l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 3 bytes.
+1D 49 6F                                            I o
+
+ @ @ 
+
+22/10/2023@08:22:46.759::Packet[00000064l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 5 bytes.
+3D 60 49 00 00                                     = ` I  
+
+
+22/10/2023@08:22:46.810::Packet[00000065l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 18 bytes.
+37 31 32 36 32 31 34 34 00 37 30 32 36 32 31 34    7 1 2 6 2 1 4 4  7 0 2 6 2 1 4
+34 00                                              4 
+
+ 
+
+22/10/2023@08:22:46.868::Packet[00000086l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 25 bytes.
+1D 28 4C 04 00 30 40 4B 43 18 1D 28 45 02 00 06     ( L   0 @ K C   ( E   
+03 1C 28 45 03 00 3D 02 30                           ( E   =  0
+
+22/10/2023@08:22:46.928::Packet[00000067l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 21 bytes.
+37 48 32 31 00 37 27 31 30 31 1F 30 00 37 27 31    7 H 2 1  7 ' 1 0 1  0  7 ' 1
+30 32 1F 30 00                                     0 2  0 
+
+22/10/2023@08:22:46.928::Packet[00000087l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 29 bytes.
+1C 28 45 03 00 3D 02 31 1D 28 45 02 00 06 65 1D     ( E   =  1  ( E    e 
+28 45 02 00 06 66 1D 28 45 02 00 06 67             ( E    f  ( E    g
+
+22/10/2023@08:22:47.012::Packet[00000068l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 37 bytes.
+37 27 31 30 33 1F 30 00 37 27 31 30 34 1F 30 00    7 ' 1 0 3  0  7 ' 1 0 4  0 
+37 27 31 30 35 1F 30 00 37 27 31 30 30 1F 30 00    7 ' 1 0 5  0  7 ' 1 0 0  0 
+37 48 32 30 00                                     7 H 2 0 
+
+22/10/2023@08:22:47.070::Packet[00000089l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 25 bytes.
+1C 28 45 03 00 3D 02 32 1D 28 4C 04 00 30 40 4B     ( E   =  2  ( L   0 @ K
+43 18 1D 28 45 02 00 06 03                         C   ( E    
+
+22/10/2023@08:22:47.120::Packet[00000090l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 21 bytes.
+1D 28 45 02 00 06 05 1D 28 45 02 00 06 06 1D 28     ( E      ( E      (
+45 02 00 06 61                                     E    a
+
+22/10/2023@08:22:47.171::Packet[00000091l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 17 bytes.
+1D 49 72 1D 28 45 02 00 06 62 1D 28 45 02 00 06     I r  ( E    b  ( E   
+75                                                 u
+
+ 1 1 7  0 
+
+22/10/2023@08:22:47.258::Packet[00000072l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 28 bytes.
+37 27 31 31 31 1F 30 00 37 27 31 31 32 1F 31 00    7 ' 1 1 1  0  7 ' 1 1 2  1 
+37 27 38 1F 30 00 37 27 39 1F 30 00                7 ' 8  0  7 ' 9  0 
+
+ E 
+00 06 77                                             w
+
+22/10/2023@08:22:47.311::Packet[00000073l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 28 bytes.
+37 27 31 31 39 1F 30 00 37 27 31 32 30 1F 36 35    7 ' 1 1 9  0  7 ' 1 2 0  6 5
+35 33 35 00 37 27 31 32 31 1F 31 00                5 3 5  7 ' 1 2 1  1 
+
+22/10/2023@08:22:47.361::Packet[00000074l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 24 bytes.
+37 27 31 32 32 1F 31 00 37 27 31 32 33 1F 31 00    7 ' 1 2 2  1  7 ' 1 2 3  1 
+37 27 31 32 34 1F 31 00                            7 ' 1 2 4  1 
+
+22/10/2023@08:22:47.417::Packet[00000095l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 21 bytes.
+1D 28 45 02 00 06 7E 1D 28 45 02 00 06 0A 1D 28     ( E    ~  ( E      (
+45 02 00 10 01                                     E    
+
+22/10/2023@08:22:47.417::Packet[00000075l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 23 bytes.
+37 27 31 32 35 1F 32 00 37 27 31 32 36 1F 31 00    7 ' 1 2 5  2  7 ' 1 2 6  1 
+37 27 31 30 1F 30 00                               7 ' 1 0  0 
+
+22/10/2023@08:22:47.478::Packet[00000076l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 21 bytes.
+37 52 31 1F 31 00 5F 40 44 40 40 00 37 33 31 1F    7 R 1  1  _ @ D @ @  7 3 1 
+39 36 30 30 00                                     9 6 0 0 
+
+22/10/2023@08:22:48.475::Packet[00000097l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:50.514::Packet[00000098l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:53.563::Packet[00000099l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:56.611::Packet[00000100l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:22:59.662::Packet[00000101l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:23:02.692::Packet[00000102l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:23:02.693::Packet[00000077l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 4 bytes.
+14 00 00 0F                                           
+
+22/10/2023@08:23:02.979::Packet[00000103l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 3 bytes.
+1D 49 43                                            I C
+
+22/10/2023@08:23:02.989::Packet[00000078l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 9 bytes.
+5F 54 4D 2D 54 38 38 56 00                         _ T M - T 8 8 V 
+
+22/10/2023@08:23:03.047::Packet[00000104l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 12 bytes.
+1D 49 01 1D 49 43 1D 49 42 1D 49 44                 I   I C  I B  I D
+
+ O N
+00                                                 
+
+22/10/2023@08:23:03.111::Packet[00000105l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 15 bytes.
+1D 49 41 1D 49 45 1D 49 6F 1D 49 60 1D 72 01        I A  I E  I o  I `  r 
+
+32 31 20 45 53 43 2F 50 4F 53 00 5F 00 5F 40 44    2 1   E S C / P O S  _  _ @ D
+40 40 00 3D 60 49 00 00                            @ @  = ` I  
+
+22/10/2023@08:23:03.174::Packet[00000106l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 14 bytes.
+1D 28 4C 02 00 30 03 1D 28 4C 02 00 30 00           ( L   0   ( L   0 
+
+
+34 00                                              4 
+
+22/10/2023@08:23:03.233::Packet[00000082l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 19 bytes.
+37 30 32 36 32 31 34 34 00 37 72 40 00 37 27 33    7 0 2 6 2 1 4 4  7 r @  7 ' 3
+1F 36 00                                            6 
+
+     ( E   =  0
+
+22/10/2023@08:23:03.296::Packet[00000083l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 26 bytes.
+37 48 32 30 00 37 48 32 31 00 37 27 31 30 31 1F    7 H 2 0  7 H 2 1  7 ' 1 0 1 
+30 00 37 27 31 30 32 1F 30 00                      0  7 ' 1 0 2  0 
+
+ g
+
+22/10/2023@08:23:03.387::Packet[00000109l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 37 bytes.
+1D 28 45 02 00 06 68 1D 28 45 02 00 06 69 1D 28     ( E    h  ( E    i  (
+45 02 00 06 64 1C 28 45 03 00 3D 02 30 1C 28 45    E    d  ( E   =  0  ( E
+03 00 3D 02 31                                       =  1
+
+22/10/2023@08:23:03.459::Packet[00000085l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 26 bytes.
+37 48 32 31 00 37 48 32 32 32 31 30 31 31 30 00    7 H 2 1  7 H 2 2 2 1 0 1 1 0 
+37 72 40 00 37 27 33 1F 36 00                      7 r @  7 ' 3  6 
+
+    
+
+22/10/2023@08:23:03.536::Packet[00000111l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 31 bytes.
+1D 28 45 02 00 06 06 1D 28 45 02 00 06 61 1D 49     ( E      ( E    a  I
+72 1D 28 45 02 00 06 62 1D 28 45 02 00 06 75       r  ( E    b  ( E    u
+
+
+22/10/2023@08:23:03.596::Packet[00000112l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 21 bytes.
+1D 28 45 02 00 06 6F 1D 28 45 02 00 06 70 1D 28     ( E    o  ( E    p  (
+45 02 00 06 08                                     E    
+
+  7 ' 8  0 
+
+22/10/2023@08:23:03.631::Packet[00000113l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 14 bytes.
+1D 28 45 02 00 06 09 1D 28 45 02 00 06 77           ( E      ( E    w
+
+22/10/2023@08:23:03.655::Packet[00000089l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 12 bytes.
+37 27 31 32 30 1F 36 35 35 33 35 00                7 ' 1 2 0  6 5 5 3 5 
+
+22/10/2023@08:23:03.683::Packet[00000115l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 14 bytes.
+1D 28 45 02 00 06 79 1D 28 45 02 00 06 7A           ( E    y  ( E    z
+
+22/10/2023@08:23:03.683::Packet[00000090l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 8 bytes.
+37 27 31 32 31 1F 31 00                            7 ' 1 2 1  1 
+
+22/10/2023@08:23:03.727::Packet[00000091l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 16 bytes.
+37 27 31 32 32 1F 31 00 37 27 31 32 33 1F 31 00    7 ' 1 2 2  1  7 ' 1 2 3  1 
+
+22/10/2023@08:23:03.804::Packet[00000092l]<<Serial [1] [[COM5] - USB-SERIAL CH340] Received 37 bytes.
+37 27 31 32 34 1F 31 00 37 27 31 32 35 1F 32 00    7 ' 1 2 4  1  7 ' 1 2 5  2 
+37 27 31 32 36 1F 31 00 37 27 31 30 1F 30 00 37    7 ' 1 2 6  1  7 ' 1 0  0  7
+52 31 1F 31 00                                     R 1  1 
+
+22/10/2023@08:23:03.885::Packet[00000118l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 28 45 02 00 0C 01                                ( E    
+
+1  9 6 0 0 
+
+22/10/2023@08:23:04.860::Packet[00000119l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:23:06.893::Packet[00000120l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+
+22/10/2023@08:23:09.941::Packet[00000121l]<<Serial [2] [[COM6] - USB-SERIAL CH340] Received 7 bytes.
+1D 61 FF 10 14 07 01                                a     
+

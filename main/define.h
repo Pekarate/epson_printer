@@ -9,4 +9,6 @@ typedef struct {
     uint16_t len;
 }_frame_typedef;
 
+#define PRINTER_MODEL "_TM-T88V"
+
 #endif

@@ -24,7 +24,7 @@ typedef struct {
 	uint8_t key[10];
     uint8_t keysize;
     char  fn_name[100];
-	void (*callback)(void *arg);
+	int (*callback)(void *arg);
 }__ESCPOS_callbak;
 
 typedef enum {

@@ -1,0 +1,225 @@
+I (530) TinyUSB: TinyUSB Driver installed
+I (540) example: USB initialization DONE
+I (790) example: Line state changed on channel 0: DTR:0, RTS:0
+I (5780) example: Line state changed on channel 0: DTR:1, RTS:1
+I (5870) example: 0x3fc973a4   10 14 08 01 03 14 01 06  02 08                    |..........|
+I (5870) ESCPOS: clear_buffer_s_
+I (5870) SEND: 0x3fc9b8d0   37 25 00                                          |7%.|
+I (5880) example: tinyusb_cdcacm_write_flush done
+I (5920) example: 0x3fc973a4   1d 61 ff                                          |.a.|
+I (5920) ESCPOS: enable_disable_automatic_status_back__asb_
+I (5930) SEND: 0x3fc9b8d0   14 00 00 0f                                       |....|
+I (5940) example: tinyusb_cdcacm_write_flush done
+I (5950) example: 0x3fc973a4   1d 49 43                                          |.IC|
+I (5950) ESCPOS: transmit_printer_id
+I (5950) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (5960) example: tinyusb_cdcacm_write_flush done
+I (6200) example: Line state changed on channel 0: DTR:0, RTS:1
+I (6330) example: Line state changed on channel 0: DTR:1, RTS:1
+I (6420) example: 0x3fc973a4   1d 61 ff                                          |.a.|
+I (6420) ESCPOS: enable_disable_automatic_status_back__asb_
+I (6420) SEND: 0x3fc9b8d0   14 00 00 0f                                       |....|
+I (6430) example: tinyusb_cdcacm_write_flush done
+I (6710) example: 0x3fc973a4   1d 49 01                                          |.I.|
+I (6710) ESCPOS: transmit_printer_id
+I (6710) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (6720) example: tinyusb_cdcacm_write_flush done
+I (6760) example: 0x3fc973a4   1d 28 45 02 00 62 01                              |.(E..b.|
+I (6760) ESCPOS: set_user_setup_commands
+W (6760) ESCPOS: FUNCTION NOT IMPLEMENT
+I (6780) example: 0x3fc973a4   1d 72 01                                          |.r.|
+I (6780) ESCPOS: transmit_status
+I (6780) SEND: 0x3fc9b8d0   00                                                |.|
+I (6790) example: tinyusb_cdcacm_write_flush done
+I (8780) example: 0x3fc973a4   1d 61 ff                                          |.a.|
+I (8780) ESCPOS: enable_disable_automatic_status_back__asb_
+I (8780) SEND: 0x3fc9b8d0   14 00 00 0f                                       |....|
+I (8790) example: tinyusb_cdcacm_write_flush done
+I (8830) example: 0x3fc973a4   1d 49 43                                          |.IC|
+I (8830) ESCPOS: transmit_printer_id
+I (8830) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (8840) example: tinyusb_cdcacm_write_flush done
+I (8880) example: 0x3fc973a4   1d 49 01                                          |.I.|
+I (8880) ESCPOS: transmit_printer_id
+I (8880) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (8890) example: tinyusb_cdcacm_write_flush done
+I (8930) example: 0x3fc973a4   1d 49 43                                          |.IC|
+I (8930) ESCPOS: transmit_printer_id
+I (8930) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (8940) example: tinyusb_cdcacm_write_flush done
+I (8990) example: 0x3fc973a4   1d 49 42                                          |.IB|
+I (8990) ESCPOS: transmit_printer_id
+I (8990) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (9000) example: tinyusb_cdcacm_write_flush done
+I (9050) example: 0x3fc973a4   1d 49 44                                          |.ID|
+I (9050) ESCPOS: transmit_printer_id
+I (9050) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (9060) example: tinyusb_cdcacm_write_flush done
+I (9110) example: 0x3fc973a4   1d 49 41                                          |.IA|
+I (9110) ESCPOS: transmit_printer_id
+I (9110) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (9120) example: tinyusb_cdcacm_write_flush done
+I (9170) example: 0x3fc973a4   1d 49 45                                          |.IE|
+I (9170) ESCPOS: transmit_printer_id
+I (9170) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (9180) example: tinyusb_cdcacm_write_flush done
+I (9230) example: 0x3fc973a4   1d 49 6f                                          |.Io|
+I (9230) ESCPOS: transmit_printer_id
+I (9230) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (9240) example: tinyusb_cdcacm_write_flush done
+I (9290) example: 0x3fc973a4   1d 49 60                                          |.I`|
+I (9290) ESCPOS: transmit_printer_id
+I (9300) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (9300) example: tinyusb_cdcacm_write_flush done
+I (9320) example: 0x3fc973a4   1d 72 01                                          |.r.|
+I (9320) ESCPOS: transmit_status
+I (9320) SEND: 0x3fc9b8d0   00                                                |.|
+I (9330) example: tinyusb_cdcacm_write_flush done
+I (9360) example: 0x3fc973a4   1d 28 4c 02 00 30 03                              |.(L..0.|
+I (9360) ESCPOS: transmit_remaining_capacity_NV_memory
+I (9370) SEND: 0x3fc9b8d0   33 31 32 36 32 31 34 34  00                       |31262144.|
+I (9380) example: tinyusb_cdcacm_write_flush done
+I (9410) example: 0x3fc973a4   1d 28 45 02 00 06 03                              |.(E....|
+I (9420) ESCPOS: transmit_customized_setting_values
+I (9420) ESCPOS: transmit paper witdh
+I (9420) SEND: 0x3fc9b8d0   37 27 33 1f 36 00                                 |7'3.6.|
+I (9430) example: tinyusb_cdcacm_write_flush done
+I (9480) example: 0x3fc973a4   1d 28 45 02 00 06 65                              |.(E...e|
+I (9480) ESCPOS: transmit_customized_setting_values
+I (9480) SEND: 0x3fc9b8d0   37 27 31 30 31 1f 30 00                           |7'101.0.|
+I (9490) example: tinyusb_cdcacm_write_flush done
+I (9540) example: 0x3fc973a4   1d 28 45 02 00 06 66                              |.(E...f|
+I (9540) ESCPOS: transmit_customized_setting_values
+I (9540) SEND: 0x3fc9b8d0   37 27 31 30 32 1f 30 00                           |7'102.0.|
+I (9550) example: tinyusb_cdcacm_write_flush done
+I (9600) example: 0x3fc973a4   1d 28 45 02 00 06 67                              |.(E...g|
+I (9600) ESCPOS: transmit_customized_setting_values
+I (9600) SEND: 0x3fc9b8d0   37 27 31 30 33 1f 30 00                           |7'103.0.|
+I (9610) example: tinyusb_cdcacm_write_flush done
+I (9650) example: 0x3fc973a4   1d 28 45 02 00 06 68                              |.(E...h|
+I (9650) ESCPOS: transmit_customized_setting_values
+I (9650) SEND: 0x3fc9b8d0   37 27 31 30 34 1f 30 00                           |7'104.0.|
+I (9660) example: tinyusb_cdcacm_write_flush done
+I (9700) example: 0x3fc973a4   1d 28 45 02 00 06 69                              |.(E...i|
+I (9700) ESCPOS: transmit_customized_setting_values
+I (9710) SEND: 0x3fc9b8d0   37 27 31 30 35 1f 30 00                           |7'105.0.|
+I (9720) example: tinyusb_cdcacm_write_flush done
+I (9770) example: 0x3fc973a4   1d 28 45 02 00 06 64                              |.(E...d|
+I (9770) ESCPOS: transmit_customized_setting_values
+I (9770) SEND: 0x3fc9b8d0   37 27 31 30 30 1f 30 00                           |7'100.0.|
+I (9780) example: tinyusb_cdcacm_write_flush done
+I (9830) example: 0x3fc973a4   1c 28 45 03 00 3d 02 30                           |.(E..=.0|
+I (9830) ESCPOS: transmit_top_bottom_logo_printing
+I (9830) SEND: 0x3fc9b8d0   37 48 32 30 00                                    |7H20.|
+I (9840) example: tinyusb_cdcacm_write_flush done
+I (9890) example: 0x3fc973a4   1c 28 45 03 00 3d 02 31                           |.(E..=.1|
+I (9890) ESCPOS: transmit_top_bottom_logo_printing
+I (9890) SEND: 0x3fc9b8d0   37 48 32 31 00                                    |7H21.|
+I (9900) example: tinyusb_cdcacm_write_flush done
+I (9950) example: 0x3fc973a4   1c 28 45 03 00 3d 02 32                           |.(E..=.2|
+I (9950) ESCPOS: transmit_top_bottom_logo_printing
+I (9950) SEND: 0x3fc9b8d0   37 48 32 32 32 31 30 31  31 30 00                 |7H22210110.|
+I (9960) example: tinyusb_cdcacm_write_flush done
+I (10030) example: 0x3fc973a4   1d 28 4c 04 00 30 40 4b  43                       |.(L..0@KC|
+I (10030) ESCPOS: transmit_key_code_list_for_define_NV_graphic
+I (10030) SEND: 0x3fc9b8d0   37 72 40 00                                       |7r@.|
+I (10040) example: tinyusb_cdcacm_write_flush done
+I (10070) example: 0x3fc973a4   18                                                |.|
+I (10070) ESCPOS: cancel_print_data_in_page_mode
+I (10080) example: 0x3fc973a4   1d 28 45 02 00 06 03                              |.(E....|
+I (10080) ESCPOS: transmit_customized_setting_values
+I (10080) ESCPOS: transmit paper witdh
+I (10090) SEND: 0x3fc9b8d0   37 27 33 1f 36 00                                 |7'3.6.|
+I (10100) example: tinyusb_cdcacm_write_flush done
+I (10130) example: 0x3fc973a4   1d 28 45 02 00 06 05                              |.(E....|
+I (10130) ESCPOS: transmit_customized_setting_values
+I (10130) SEND: 0x3fc9b8d0   37 27 35 1f 31 30 30 00                           |7'5.100.|
+I (10140) example: tinyusb_cdcacm_write_flush done
+I (10190) example: 0x3fc973a4   1d 28 45 02 00 06 06                              |.(E....|
+I (10190) ESCPOS: transmit_customized_setting_values
+I (10190) SEND: 0x3fc9b8d0   37 27 36 1f 31 33 00                              |7'6.13.|
+I (10200) example: tinyusb_cdcacm_write_flush done
+I (10250) example: 0x3fc973a4   1d 28 45 02 00 06 61                              |.(E...a|
+I (10250) ESCPOS: transmit_customized_setting_values
+I (10250) SEND: 0x3fc9b8d0   37 27 39 37 1f 31 00                              |7'97.1.|
+I (10260) example: tinyusb_cdcacm_write_flush done
+I (10300) example: 0x3fc973a4   1d 49 72                                          |.Ir|
+I (10300) ESCPOS: transmit_printer_id
+I (10300) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (10310) example: tinyusb_cdcacm_write_flush done
+I (10360) example: 0x3fc973a4   1d 28 45 02 00 06 62                              |.(E...b|
+I (10360) ESCPOS: transmit_customized_setting_values
+I (10370) SEND: 0x3fc9b8d0   37 27 39 38 1f 32 00                              |7'98.2.|
+I (10380) example: tinyusb_cdcacm_write_flush done
+I (10410) example: 0x3fc973a4   1d 28 45 02 00 06 75                              |.(E...u|
+I (10410) ESCPOS: transmit_customized_setting_values
+I (10410) SEND: 0x3fc9b8d0   37 27 31 31 37 1f 30 00                           |7'117.0.|
+I (10420) example: tinyusb_cdcacm_write_flush done
+I (10460) example: 0x3fc973a4   1d 28 45 02 00 06 6f                              |.(E...o|
+I (10460) ESCPOS: transmit_customized_setting_values
+I (10470) SEND: 0x3fc9b8d0   37 27 31 31 31 1f 30 00                           |7'111.0.|
+I (10480) example: tinyusb_cdcacm_write_flush done
+I (10490) example: 0x3fc973a4   1d 28 45 02 00 06 70                              |.(E...p|
+I (10500) ESCPOS: transmit_customized_setting_values
+I (10500) SEND: 0x3fc9b8d0   37 27 31 31 32 1f 31 00                           |7'112.1.|
+I (10510) example: tinyusb_cdcacm_write_flush done
+I (10560) example: 0x3fc973a4   1d 28 45 02 00 06 08                              |.(E....|
+I (10570) ESCPOS: transmit_customized_setting_values
+I (10570) SEND: 0x3fc9b8d0   37 27 38 1f 30 00                                 |7'8.0.|
+I (10580) example: tinyusb_cdcacm_write_flush done
+I (10620) example: 0x3fc973a4   1d 28 45 02 00 06 09                              |.(E....|
+I (10620) ESCPOS: transmit_customized_setting_values
+I (10620) SEND: 0x3fc9b8d0   37 27 39 1f 30 00                                 |7'9.0.|
+I (10630) example: tinyusb_cdcacm_write_flush done
+I (10670) example: 0x3fc973a4   1d 28 45 02 00 06 77                              |.(E...w|
+I (10670) ESCPOS: transmit_customized_setting_values
+I (10680) SEND: 0x3fc9b8d0   37 27 31 31 39 1f 30 00                           |7'119.0.|
+I (10680) example: tinyusb_cdcacm_write_flush done
+I (10730) example: 0x3fc973a4   1d 28 45 02 00 06 78                              |.(E...x|
+I (10730) ESCPOS: transmit_customized_setting_values
+I (10730) SEND: 0x3fc9b8d0   37 27 31 32 30 1f 36 35  35 33 35 00              |7'120.65535.|
+I (10740) example: tinyusb_cdcacm_write_flush done
+I (10800) example: 0x3fc973a4   1d 28 45 02 00 06 79                              |.(E...y|
+I (10800) ESCPOS: transmit_customized_setting_values
+I (10810) SEND: 0x3fc9b8d0   37 27 31 32 31 1f 31 00                           |7'121.1.|
+I (10810) example: tinyusb_cdcacm_write_flush done
+I (10860) example: 0x3fc973a4   1d 28 45 02 00 06 7a                              |.(E...z|
+I (10860) ESCPOS: transmit_customized_setting_values
+I (10860) SEND: 0x3fc9b8d0   37 27 31 32 32 1f 31 00                           |7'122.1.|
+I (10870) example: tinyusb_cdcacm_write_flush done
+I (10900) example: 0x3fc973a4   1d 28 45 02 00 06 7b                              |.(E...{|
+I (10900) ESCPOS: transmit_customized_setting_values
+I (10910) SEND: 0x3fc9b8d0   37 27 31 32 33 1f 31 00                           |7'123.1.|
+I (10920) example: tinyusb_cdcacm_write_flush done
+I (10960) example: 0x3fc973a4   1d 28 45 02 00 06 7c                              |.(E...||
+I (10960) ESCPOS: transmit_customized_setting_values
+I (10970) SEND: 0x3fc9b8d0   37 27 31 32 34 1f 31 00                           |7'124.1.|
+I (10980) example: tinyusb_cdcacm_write_flush done
+I (11030) example: 0x3fc973a4   1d 28 45 02 00 06 7d                              |.(E...}|
+I (11040) ESCPOS: transmit_customized_setting_values
+I (11040) SEND: 0x3fc9b8d0   37 27 31 32 35 1f 32 00                           |7'125.2.|
+I (11050) example: tinyusb_cdcacm_write_flush done
+I (11090) example: 0x3fc973a4   1d 28 45 02 00 06 7e                              |.(E...~|
+I (11090) ESCPOS: transmit_customized_setting_values
+I (11090) SEND: 0x3fc9b8d0   37 27 31 32 36 1f 31 00                           |7'126.1.|
+I (11100) example: tinyusb_cdcacm_write_flush done
+I (11150) example: 0x3fc973a4   1d 28 45 02 00 06 0a                              |.(E....|
+I (11150) ESCPOS: transmit_customized_setting_values
+I (11150) SEND: 0x3fc9b8d0   37 27 31 30 1f 30 00                              |7'10.0.|
+I (11160) example: tinyusb_cdcacm_write_flush done
+I (11210) example: 0x3fc973a4   1d 28 45 02 00 10 01                              |.(E....|
+I (11210) ESCPOS: transmit_condition_for_usb_interface
+I (11210) SEND: 0x3fc9b8d0   37 52 31 1f 31 00                                 |7R1.1.|
+I (11220) example: tinyusb_cdcacm_write_flush done
+I (11270) example: 0x3fc973a4   1d 49 6f                                          |.Io|
+I (11270) ESCPOS: transmit_printer_id
+I (11270) SEND: 0x3fc9b8d0   5f 54 4d 2d 54 38 38 56  00                       |_TM-T88V.|
+I (11280) example: tinyusb_cdcacm_write_flush done
+I (11330) example: 0x3fc973a4   1d 28 45 02 00 0c 01                              |.(E....|
+I (11330) ESCPOS: transmit_configuration_item_for_serial_interface
+I (11330) SEND: 0x3fc9b8d0   37 33 31 1f 39 36 30 30  00                       |731.9600.|
+I (11340) example: tinyusb_cdcacm_write_flush done
+I (13850) example: 0x3fc973a4   1d 61 ff                                          |.a.|
+I (13850) ESCPOS: enable_disable_automatic_status_back__asb_
+I (13850) SEND: 0x3fc9b8d0   14 00 00 0f                                       |....|
+I (13860) example: tinyusb_cdcacm_write_flush done

@@ -1,5 +1,20 @@
 {
     "idf.adapterTargetName": "esp32s3",
     "idf.flashType": "UART",
-    "idf.portWin": "COM8"
+    "idf.portWin": "COM8",
+    "files.associations": {
+        "array": "c",
+        "string": "c",
+        "*.tcc": "c",
+        "vector": "c",
+        "exception": "c",
+        "functional": "c",
+        "istream": "c",
+        "limits": "c",
+        "ostream": "c",
+        "sstream": "c",
+        "streambuf": "c",
+        "my_timer.h": "c",
+        "my_gpio.h": "c"
+    }
 }
