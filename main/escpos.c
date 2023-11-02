@@ -239,7 +239,7 @@ void esc_pos_check_frame(_frame_typedef frame) {
             }
         }
         if (i==ss) {
-            ESP_LOGW(TAG,"not support this fuction");
+            // ESP_LOGW(TAG,"not support this fuction");
             index+=1;
         }
     }
@@ -250,6 +250,9 @@ void esc_pos_check_frame(_frame_typedef frame) {
 
 0x3fca1214   1b 28 73 04 00 31 41 10  c9   |.(s..1A..|
 */
+#define MIN_RANGE 1000
+#define MAX_RANGE 43800
+extern const char* esc_cmd_73[];
 int function_not_parse_01(void *arg){
     ESP_LOGI(TAG,"%s",__func__);
     _frame_typedef *frame = (_frame_typedef *)arg; 
@@ -262,37 +265,12 @@ int function_not_parse_01(void *arg){
     int size=0;
     uint16_t code = frame->data[7];
     code = code*256+ frame->data[8];
-    switch (code)
-    {
-        case 0x10c9:
-            size=sprintf(tmp,"{ A4E4D5A594A594C51");
-            size ++;
-            break;
-        case 0x2df2:
-            size=sprintf(tmp,"{ A4B5447584958454A");
-            size ++;
-            break;
-        case 0x52ca:
-            size=sprintf(tmp,"{ A56594C574A514859");
-            size ++;
-            break;
-        case 0xc4eb:
-            size=sprintf(tmp,"{ A4C45504B5A59444D");
-            size ++;
-            break;
-        case 0xdd13:
-            size=sprintf(tmp,"{ A45424F4651564D4E");
-            size ++;
-            break;
-        case 0xe73b:
-            size=sprintf(tmp,"{ A51424D5A454E4B54");
-            size ++;
-            break;
-        default:
-            ESP_LOGE(TAG,"NOT IMPLEMENT SUB FUN :%X",code);
-            break;
+    if((code >=MIN_RANGE) && (code <=MAX_RANGE)) {
+        size=sprintf(tmp,"{ A%s",esc_cmd_73[code - MIN_RANGE]);
+        size ++;
+    } else {
+        ESP_LOGW(TAG,"NOT IMPLEMENT SUB FUN :%X",code);
     }
-
     if(size) {
         epson_response_to_host((uint8_t *)tmp,size);
     }
@@ -1119,8 +1097,9 @@ fn = 6
 int transmit_customized_setting_values(void *arg){
     ESP_LOGI(TAG,"%s",__func__); 
     _frame_typedef *newframe = (_frame_typedef *)arg;
-    if(newframe->len != 7) {
+    if(newframe->len < 7) {
         ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+        return newframe->len;
     }
     char tmp[15];
     int size =0;
@@ -1215,8 +1194,9 @@ int transmit_customized_setting_values(void *arg){
 int transmit_configuration_item_for_serial_interface(void *arg){
     ESP_LOGI(TAG,"%s",__func__); 
     _frame_typedef *newframe = (_frame_typedef *)arg;
-    if(newframe->len != 7) {
+    if(newframe->len < 7) {
         ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+        return newframe->len;
     }
     char tmp[15];
     int size =0;
@@ -1249,8 +1229,9 @@ int transmit_configuration_item_for_serial_interface(void *arg){
 int transmit_condition_for_usb_interface(void *arg){  //done
     ESP_LOGI(TAG,"%s",__func__); 
     _frame_typedef *newframe = (_frame_typedef *)arg;
-    if(newframe->len != 7) {
+    if(newframe->len < 7) {
         ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+        return newframe->len;
     }
     char tmp[15];
     int size =0;
@@ -1285,8 +1266,9 @@ int transmit_related_capacity_NV_memory(void *arg) {
 
     ESP_LOGI(TAG,"%s",__func__); 
     _frame_typedef *newframe = (_frame_typedef *)arg;
-    if(newframe->len != 7) {
+    if(newframe->len < 7) {
         ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+        return newframe->len;
     }
     char tmp[15];
     int size = 0; 
@@ -1359,8 +1341,9 @@ int select_print_position_of_hri_characters(void *arg) {
 int transmit_printer_id(void *arg) {
     ESP_LOGI(TAG,"%s",__func__); 
     _frame_typedef *newframe = (_frame_typedef *)arg;
-    if(newframe->len != 3) {
+    if(newframe->len < 3) {
         ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+        return newframe->len;
     }
     char tmp[15];
     int size =0;
@@ -1432,7 +1415,12 @@ int transmit_printer_id(void *arg) {
             size++;
             break;
         }
-        
+        case 113://  Printer model
+        {
+            size = sprintf(tmp,"_1");
+            size++;
+            break;
+        }    
         case 112://  Printer model
         case 114://  Printer model
         {
@@ -1483,8 +1471,9 @@ int execute_macro(void *arg) {
 int enable_disable_automatic_status_back__asb_(void *arg) {
     ESP_LOGI(TAG,"%s",__func__); 
     _frame_typedef *newframe = (_frame_typedef *)arg;
-    if(newframe->len != 3) {
+    if(newframe->len < 3) {
         ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+        return newframe->len;
     }
     // char tmp[15];
     // int size =0;
@@ -1536,8 +1525,9 @@ int print_bar_code(void *arg) {
 int transmit_status(void *arg) {
     ESP_LOGI(TAG,"%s",__func__); 
     _frame_typedef *newframe = (_frame_typedef *)arg;
-    if(newframe->len != 3) {
+    if(newframe->len < 3) {
         ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+        return newframe->len;
     }
     uint8_t res =0;
     switch (newframe->data[2])

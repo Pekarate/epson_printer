@@ -15,6 +15,9 @@
         "sstream": "c",
         "streambuf": "c",
         "my_timer.h": "c",
-        "my_gpio.h": "c"
+        "my_gpio.h": "c",
+        "tusb_msc_storage.h": "c",
+        "errno.h": "c",
+        "system_error": "c"
     }
 }
