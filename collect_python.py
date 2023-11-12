@@ -7,9 +7,8 @@ baud_rate = 9600  # Adjust the baud rate as needed
 initial_data = [0x1B, 0x28, 0x73, 0x04,0x00, 0x31, 0x42]
 
 try:
-    ser = serial.Serial(com_port, baud_rate)
-
-    for i in range(1000,1500):
+    ser = serial.Serial(com_port, baud_rate,dsrdtr=True)
+    for i in range(60000,65536):
         # Calculate the two bytes to be added
         last_two_bytes = [i // 256, i % 256]
 
@@ -26,7 +25,7 @@ try:
         received_data = ser.read(20)  # Read 10 bytes of data (adjust as needed)
         trimmed_data = received_data[3:-1]
         # Append the received data to the file
-        with open('received_data.c', 'ab') as file:
+        with open('command42_6xxxx.c', 'ab') as file:
             file.write(b'"' + trimmed_data + b'",\n')
 
     # Close the COM port after the loop

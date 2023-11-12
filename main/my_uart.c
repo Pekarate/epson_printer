@@ -32,6 +32,94 @@
 static const char *TAG = "UART";
 
 #define BUF_SIZE (1024)
+static QueueHandle_t uart_queue;
+
+static void uart_event_task(void *pvParameters)
+{
+    uart_event_t event;
+    size_t buffered_size;
+    // uint8_t* dtmp = (uint8_t*) malloc(RD_BUF_SIZE);
+    for(;;) {
+        //Waiting for UART event.
+        if(xQueueReceive(uart_queue, (void * )&event, (TickType_t)portMAX_DELAY)) {
+            // bzero(dtmp, RD_BUF_SIZE);
+            // ESP_LOGI(TAG, "uart[%d] event:", UART_PORT_NUM);
+            switch(event.type) {
+                //Event of UART receving data
+                /*We'd better handler data event fast, there would be much more data events than
+                other types of events. If we take too much time on data event, the queue might
+                be full.*/
+                case UART_DATA:
+                    uint8_t *bufer = (uint8_t *)malloc(event.size+1);
+                    if(bufer)
+                    {
+                        uart_read_bytes(UART_PORT_NUM, bufer, event.size, portMAX_DELAY);
+                        LL_uart_add_to_queue(bufer,event.size);
+                    }   
+                    // ESP_LOGI(TAG, "[UART DATA]: %d", event.size);
+                    // uart_read_bytes(UART_PORT_NUM, dtmp, event.size, portMAX_DELAY);
+                    // ESP_LOGI(TAG, "[DATA EVT]:");
+                    // uart_write_bytes(UART_PORT_NUM, (const char*) dtmp, event.size);
+                    break;
+                //Event of HW FIFO overflow detected
+                case UART_FIFO_OVF:
+                    ESP_LOGI(TAG, "hw fifo overflow");
+                    // If fifo overflow happened, you should consider adding flow control for your application.
+                    // The ISR has already reset the rx FIFO,
+                    // As an example, we directly flush the rx buffer here in order to read more data.
+                    uart_flush_input(UART_PORT_NUM);
+                    xQueueReset(uart_queue);
+                    break;
+                //Event of UART ring buffer full
+                case UART_BUFFER_FULL:
+                    ESP_LOGI(TAG, "ring buffer full");
+                    // If buffer full happened, you should consider increasing your buffer size
+                    // As an example, we directly flush the rx buffer here in order to read more data.
+                    uart_flush_input(UART_PORT_NUM);
+                    xQueueReset(uart_queue);
+                    break;
+                //Event of UART RX break detected
+                case UART_BREAK:
+                    ESP_LOGI(TAG, "uart rx break");
+                    break;
+                //Event of UART parity check error
+                case UART_PARITY_ERR:
+                    ESP_LOGI(TAG, "uart parity error");
+                    break;
+                //Event of UART frame error
+                case UART_FRAME_ERR:
+                    ESP_LOGI(TAG, "uart frame error");
+                    break;
+                //UART_PATTERN_DET
+                // case UART_PATTERN_DET:
+                //     uart_get_buffered_data_len(UART_PORT_NUM, &buffered_size);
+                //     int pos = uart_pattern_pop_pos(UART_PORT_NUM);
+                //     ESP_LOGI(TAG, "[UART PATTERN DETECTED] pos: %d, buffered size: %d", pos, buffered_size);
+                //     if (pos == -1) {
+                //         // There used to be a UART_PATTERN_DET event, but the pattern position queue is full so that it can not
+                //         // record the position. We should set a larger queue size.
+                //         // As an example, we directly flush the rx buffer here.
+                //         uart_flush_input(UART_PORT_NUM);
+                //     } else {
+                //         uart_read_bytes(UART_PORT_NUM, dtmp, pos, 100 / portTICK_PERIOD_MS);
+                //         uint8_t pat[PATTERN_CHR_NUM + 1];
+                //         memset(pat, 0, sizeof(pat));
+                //         uart_read_bytes(UART_PORT_NUM, pat, PATTERN_CHR_NUM, 100 / portTICK_PERIOD_MS);
+                //         ESP_LOGI(TAG, "read data: %s", dtmp);
+                //         ESP_LOGI(TAG, "read pat : %s", pat);
+                //     }
+                //     break;
+                //Others
+                default:
+                    ESP_LOGI(TAG, "uart event type: %d", event.type);
+                    break;
+            }
+        }
+    }
+    // free(dtmp);
+    // dtmp = NULL;
+    vTaskDelete(NULL);
+}
 
 void my_uart_start(void)
 {
@@ -51,7 +139,10 @@ void my_uart_start(void)
     intr_alloc_flags = ESP_INTR_FLAG_IRAM;
 #endif
 
-    ESP_ERROR_CHECK(uart_driver_install(UART_PORT_NUM, BUF_SIZE * 2,BUF_SIZE, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_driver_install(UART_PORT_NUM, BUF_SIZE * 2,BUF_SIZE,20, &uart_queue, 0));
     ESP_ERROR_CHECK(uart_param_config(UART_PORT_NUM, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(UART_PORT_NUM, ECHO_TEST_TXD, ECHO_TEST_RXD, ECHO_TEST_RTS, ECHO_TEST_CTS));
+    uart_pattern_queue_reset(UART_PORT_NUM, 20);
+    uart_flush(UART_PORT_NUM);
+    xTaskCreate(uart_event_task, "uart_event_task", 2048, NULL, 12, NULL);
 }

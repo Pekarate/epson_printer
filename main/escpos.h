@@ -6,12 +6,12 @@
 #include <stdint.h>
 #include "define.h"
 
-#define HT           0x09
-#define LF           0x0A
-#define FF           0x0C 
-#define CR           0x0D
-#define CAN          0x18
-#define DLE          0x10
+#define HT                  0x09
+#define LF                  0x0A
+#define FF                  0x0C 
+#define CR                  0x0D
+#define CAN                 0x18
+#define DLE                 0x10
 #define EOT                 0x04
 #define ENQ                 0x05
 #define DC4                 0x14
@@ -19,7 +19,7 @@
 #define SP                  0x20
 #define FS                  0x1C
 #define GS                  0x1D
-
+#define DONT_CARE           0x00
 typedef struct {
 	uint8_t key[10];
     uint8_t keysize;

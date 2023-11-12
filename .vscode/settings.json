@@ -18,6 +18,14 @@
         "my_gpio.h": "c",
         "tusb_msc_storage.h": "c",
         "errno.h": "c",
-        "system_error": "c"
+        "system_error": "c",
+        "random": "c",
+        "tusb_cdc_acm.h": "c",
+        "define.h": "c",
+        "initializer_list": "c",
+        "utility": "c",
+        "stdlib.h": "c",
+        "my_uart.h": "c",
+        "usbd_pvt.h": "c"
     }
 }

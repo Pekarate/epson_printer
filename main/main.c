@@ -5,12 +5,16 @@
  */
 
 #include <stdint.h>
+#include <dirent.h>
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "tinyusb.h"
 #include "tusb_cdc_acm.h"
 #include "sdkconfig.h"
+#include "nvs_flash.h"
+#include "time.h"
+#include <sys/time.h>
 
 #include "device/usbd.h"
 #include "device/usbd_pvt.h"
@@ -28,17 +32,21 @@
 #include "tusb_msc_storage.h"
 #include "tusb_cdc_acm.h"
 
-#define BASE_PATH "/usb" // base path to mount the partition
 #include "my_timer.h"
 #include "my_uart.h"
 #include "my_gpio.h"
+#include "my_file.h"
+#include "esp_random.h"
+
+
+extern uint8_t is_cut_command;
 
 QueueHandle_t xStructQueue = NULL;
 extern void set_dsr(uint8_t itf, bool value);
 static const char *TAG = "example";
 static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
 
-#define BASE_PATH "/usb" // base path to mount the partition
+
 
 void timer_1_ms_callback(void){
     static uint32_t cnt = 0;
@@ -57,6 +65,14 @@ void timer_1_ms_callback(void){
         xQueueSend(xStructQueue,( void * ) &newframe,( TickType_t ) 100 );
         now_length = length = 0;
     }
+}
+
+void LL_uart_add_to_queue(uint8_t *data,uint16_t len)
+{
+    _frame_typedef newframe;
+    newframe.data = data;
+    newframe.len = len;
+    xQueueSend(xStructQueue,( void * ) &newframe,( TickType_t ) 100 );
 }
 
 void epson_response_to_host(uint8_t *buf,uint16_t rx_size){
@@ -149,54 +165,6 @@ void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event)
 }
 
 
-static bool file_exists(const char *file_path)
-{
-    struct stat buffer;
-    return stat(file_path, &buffer) == 0;
-}
-
-static void file_operations(void)
-{
-    const char *directory = "/usb/esp";
-    const char *file_path = "/usb/esp/test.txt";
-
-    struct stat s = {0};
-    bool directory_exists = stat(directory, &s) == 0;
-    if (!directory_exists) {
-        if (mkdir(directory, 0775) != 0) {
-            ESP_LOGE(TAG, "mkdir failed with errno: %s", strerror(errno));
-        }
-    }
-
-    if (!file_exists(file_path)) {
-        ESP_LOGI(TAG, "Creating file");
-        FILE *f = fopen(file_path, "w");
-        if (f == NULL) {
-            ESP_LOGE(TAG, "Failed to open file for writing");
-            return;
-        }
-        fprintf(f, "Hello World!\n");
-        fclose(f);
-    }
-
-    FILE *f;
-    ESP_LOGI(TAG, "Reading file");
-    f = fopen(file_path, "r");
-    if (f == NULL) {
-        ESP_LOGE(TAG, "Failed to open file for reading");
-        return;
-    }
-    char line[64];
-    fgets(line, sizeof(line), f);
-    fclose(f);
-    // strip newline
-    char *pos = strchr(line, '\n');
-    if (pos) {
-        *pos = '\0';
-    }
-    ESP_LOGI(TAG, "Read from file: '%s'", line);
-}
-
 
 static esp_err_t storage_init_spiflash(wl_handle_t *wl_handle)
 {
@@ -212,10 +180,45 @@ static esp_err_t storage_init_spiflash(wl_handle_t *wl_handle)
 }
 
 
+// mount the partition and show all the files in BASE_PATH
+static void _mount(void)
+{
+    ESP_LOGI(TAG, "Mount storage...");
+    ESP_ERROR_CHECK(tinyusb_msc_storage_mount(BASE_PATH));
 
+
+    // List all the files in this directory
+    ESP_LOGI(TAG, "\nls command output:");
+    struct dirent *d;
+    DIR *dh = opendir(BASE_PATH);
+    if (!dh) {
+        if (errno == ENOENT) {
+            //If the directory is not found
+            ESP_LOGE(TAG, "Directory doesn't exist %s", BASE_PATH);
+        } else {
+            //If the directory is not readable then throw error and exit
+            ESP_LOGE(TAG, "Unable to read directory %s", BASE_PATH);
+        }
+        return;
+    }
+    //While the next entry is not readable we will print directory files
+    while ((d = readdir(dh)) != NULL) {
+        printf("%s\n", d->d_name);
+    }
+    return;
+}
+
+extern void my_wifi_start(void);
 void app_main(void)
 {
-
+    //Initialize NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+      ESP_ERROR_CHECK(nvs_flash_erase());
+      ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+    // my_wifi_start();
     ESP_LOGI(TAG, "Initializing storage...");
 
     static wl_handle_t wl_handle = WL_INVALID_HANDLE;
@@ -225,18 +228,17 @@ void app_main(void)
         .wl_handle = wl_handle
     };
     ESP_ERROR_CHECK(tinyusb_msc_storage_init_spiflash(&config_spi));
-    ESP_ERROR_CHECK(tinyusb_msc_storage_mount(BASE_PATH));
-    file_operations();
+    _mount();
 
-    ESP_LOGI(TAG, "USB Composite initialization");
-    const tinyusb_config_t tusb_msc = {
+    const tinyusb_config_t tusb_cfg = {
         .device_descriptor = NULL,
         .string_descriptor = NULL,
         .string_descriptor_count = 0,
         .external_phy = false,
         .configuration_descriptor = NULL,
     };
-    ESP_ERROR_CHECK(tinyusb_driver_install(&tusb_msc));
+
+    ESP_ERROR_CHECK(tinyusb_driver_install(&tusb_cfg));
 
     tinyusb_config_cdcacm_t acm_cfg = {
         .usb_dev = TINYUSB_USBDEV_0,
@@ -254,15 +256,6 @@ void app_main(void)
                         TINYUSB_CDC_ACM_0,
                         CDC_EVENT_LINE_STATE_CHANGED,
                         &tinyusb_cdc_line_state_changed_callback));
-
-#if (CONFIG_TINYUSB_CDC_COUNT > 1)
-    acm_cfg.cdc_port = TINYUSB_CDC_ACM_1;
-    ESP_ERROR_CHECK(tusb_cdc_acm_init(&acm_cfg));
-    ESP_ERROR_CHECK(tinyusb_cdcacm_register_callback(
-                        TINYUSB_CDC_ACM_1,
-                        CDC_EVENT_LINE_STATE_CHANGED,
-                        &tinyusb_cdc_line_state_changed_callback));
-#endif
     
     ESP_LOGI(TAG, "USB initialization DONE");
     xStructQueue = xQueueCreate(
@@ -277,31 +270,45 @@ void app_main(void)
     vTaskDelay(100);
     // set_dsr(0,1);
     _frame_typedef newframe;
-    
+    if (tinyusb_msc_storage_in_use_by_usb_host()) {
+        ESP_LOGE(TAG, "storage exposed over USB. Application can't write to storage.");
+        ESP_LOGE(TAG, "Please eject usb storage in your computer");
+    }            
+    FILE *stream = NULL;
+    struct timeval tv_now;
+    // gettimeofday(&tv_now, NULL);
+    // int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
+    // ESP_LOGW(TAG, "time_us: %llu",time_us);
     while (1)
     {
-        // if(dtr){
-        //     for(int i =0;i<10 ;i++)
-        //     {
-        //         vTaskDelay(100);
-        //         epson_response_to_host(&XON,1);
-        //     }
-        // }
         if( xQueueReceive( xStructQueue,&(newframe),( TickType_t ) 10 ) == pdPASS )
         {   
-            int c =0;
-            for( c=0;c< newframe.len;c++)
-            {
-                if(newframe.data[c])
-                    break;
+
+            ESP_LOG_BUFFER_HEXDUMP("RECV: ", newframe.data, newframe.len, ESP_LOG_INFO);
+            esc_pos_check_frame(newframe);
+            if (tinyusb_msc_storage_in_use_by_usb_host()) {
+                ESP_LOGE(TAG, "storage exposed over USB. Application can't write to storage.");
+            }else {
+                if(stream == NULL) 
+                {
+                    gettimeofday(&tv_now, NULL);
+                    int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
+                    ESP_LOGW(TAG, "time_us: %llu",time_us);
+                    char file_name[40];
+                    sprintf(file_name,"/data/raw%3d.bin",(int)(time_us%1000));
+                    stream =bin_file_creat(file_name);
+                }
+                if(stream) {
+                    if(write_data_to_bin_file(stream,newframe.data,newframe.len) != newframe.len) {
+                        ESP_LOGE(TAG, "write to file error");
+                    }
+                } 
             }
-            if(c != newframe.len) {
-                ESP_LOG_BUFFER_HEXDUMP("RECV: ", newframe.data, newframe.len, ESP_LOG_INFO);
-                esc_pos_check_frame(newframe);
-            } else {
-                ESP_LOGI(TAG, "message %d byte: full 0",newframe.data[c]);
+            if(is_cut_command) {
+                is_cut_command =0;
+                file_close(stream);
+                stream = NULL;
             }
-            
             free(newframe.data);
         }
         // vTaskDelay(1);

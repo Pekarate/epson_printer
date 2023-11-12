@@ -480,25 +480,4 @@ bool cdcd_xfer_cb(uint8_t rhport, uint8_t ep_addr, xfer_result_t result, uint32_
   return true;
 }
 
-
-void set_dsr(uint8_t itf, bool value) {
-    printf("%s %d\n",__func__,value);
-    cdcd_interface_t* p_cdc = &_cdcd_itf[itf];
-
-    uint8_t packet[10];
-
-    packet[0] = 0xA1;                        //   bmRequestType
-    packet[1] = CDC_NOTIF_SERIAL_STATE;                //   bNotification
-    packet[2] = 0x00;                        //   wValue
-    packet[3] = 0x00;
-    packet[4] = 0x00;                        //   wIndex
-    packet[5] = 0x00;
-    packet[6] = 0x02;                        //   wLength
-    packet[7] = 0x00;
-    packet[8] = value ?  0x03 : 0x00; 
-    packet[9] = 0x1E;
-
-    usbd_edpt_xfer(TUD_OPT_RHPORT, p_cdc->ep_notif, packet, 10);
-
-}
 #endif

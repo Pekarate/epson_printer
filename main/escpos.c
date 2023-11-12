@@ -74,6 +74,7 @@ int set_user_setup_commands(void *arg);
 int request_transmission_of_response_or_status(void *arg);
 int select_print_control_method_s_(void *arg);
 int transmit_related_capacity_NV_memory(void *arg);
+int store_the_graphics_data_in_the_print_buffer(void *arg);
 int select_character_effects(void *arg);
 int set_up_and_print_the_symbol(void *arg);
 int set_absolute_vertical_print_position_in_page_mode(void *arg);
@@ -110,10 +111,10 @@ int turn_quadruple_size_mode_on_off(void *arg);
 
 
 __ESCPOS_callbak escpos[] = {
-    {.keysize = 7, .key = {0x1b,0x28,0x73,0x04,0x00,0x31,0x41} ,.callback =function_not_parse_01},
-    {.keysize = 3, .key = {0x10,0x14,0x07}                  ,.callback =function_not_support_4},
-    {.keysize = 7, .key = {0x1c,0x28,0x45,0x03,0x00,0x3d,0x02}                  ,.callback =transmit_top_bottom_logo_printing},
-    {.keysize = 9, .key = {0x1d,0x28,0x4C,0x04,0x00,0x30,0x40,0x4B,0x43}                  ,.callback =transmit_key_code_list_for_define_NV_graphic},
+    {.keysize = 6, .key = {ESC,0x28,0x73,0x04,0x00,0x31} ,.callback =function_not_parse_01},
+    {.keysize = 3, .key = {DLE,0x14,0x07}                  ,.callback =function_not_support_4},
+    {.keysize = 7, .key = {FS,0x28,0x45,0x03,0x00,0x3d,0x02}                  ,.callback =transmit_top_bottom_logo_printing},
+    {.keysize = 9, .key = {GS,0x28,0x4C,0x04,0x00,0x30,0x40,0x4B,0x43}                  ,.callback =transmit_key_code_list_for_define_NV_graphic},
     {.keysize = 1, .key = {HT}                  ,.callback =horizontal_tab},
     {.keysize = 1, .key = {LF}                  ,.callback =print_and_line_feed},
     {.keysize = 1, .key = {FF}                  ,.callback =print_and_return_to_standard_mode},
@@ -171,9 +172,10 @@ __ESCPOS_callbak escpos[] = {
     {.keysize = 6, .key = {GS,'(','E',0x02,0x00,0x0C}         ,.callback =transmit_configuration_item_for_serial_interface},
     {.keysize = 6, .key = {GS,'(','E',0x02,0x00,0x10}         ,.callback =transmit_condition_for_usb_interface},
     {.keysize = 3, .key = {GS,'(','E'}         ,.callback =set_user_setup_commands},
-    {.keysize = 3, .key = {GS,'(','H'}         ,.callback =request_transmission_of_response_or_status},
+    {.keysize = 3, .key = {GS,'(','H',0x06,0x00,0x30,0x30},.callback =request_transmission_of_response_or_status},
     {.keysize = 3, .key = {GS,'(','K'}         ,.callback =select_print_control_method_s_},
     {.keysize = 6, .key = {GS,'(','L',0x02,0x00,0x30}         ,.callback =transmit_related_capacity_NV_memory},
+    {.keysize = 10, .key = {GS,'8','L',DONT_CARE,DONT_CARE,DONT_CARE,DONT_CARE,0x30,0x70,0x30} ,.callback = store_the_graphics_data_in_the_print_buffer},
     {.keysize = 3, .key = {GS,'(','N'}         ,.callback =select_character_effects},
     {.keysize = 3, .key = {GS,'(','k'}         ,.callback =set_up_and_print_the_symbol},
     {.keysize = 2, .key = {GS,'$'}             ,.callback =set_absolute_vertical_print_position_in_page_mode},
@@ -209,6 +211,32 @@ __ESCPOS_callbak escpos[] = {
     {.keysize = 2, .key = {FS,'W'}             ,.callback =turn_quadruple_size_mode_on_off}
 };
 
+int is_start_a_cmd(uint8_t bytestart)
+{
+    switch (bytestart)
+    {
+        case HT  :      //0x09:
+        case LF  :      //0x0A:
+        case FF  :      //0x0C:
+        case CR  :      //0x0D:
+        case CAN :      //0x18:
+        case DLE :      //0x10:
+        case EOT :      //0x04:
+        case ENQ :      //0x05:
+        case DC4 :      //0x14:
+        case ESC :      //0x1B:
+        case SP  :      //0x20:
+        case FS  :      //0x1C:
+        case GS  :      //0x1D:
+            return 1;
+            break;
+    
+        default:
+            return 0;
+            break;
+    }
+}
+
 __PR_typedef_result esc_pos_check_command(__ESCPOS_callbak cmd,_frame_typedef frame) {
     if(cmd.keysize > frame.len) return PR_ERR;
     for(int i =0;i<cmd.keysize;i++) {
@@ -218,6 +246,7 @@ __PR_typedef_result esc_pos_check_command(__ESCPOS_callbak cmd,_frame_typedef fr
     return PR_OK;
 }
 
+uint8_t is_cut_command = 0;
 void esc_pos_check_frame(_frame_typedef frame) {
     int i =0;
     int ss = sizeof(escpos) / sizeof (__ESCPOS_callbak);
@@ -228,20 +257,27 @@ void esc_pos_check_frame(_frame_typedef frame) {
     {
         check_frame.data = frame.data + index;
         check_frame.len = frame.len - index;
-        for(i =0;i<ss;i++)
-        {
-            // ESP_LOGI(TAG,"%d",escpos[i].keysize);
-            if(esc_pos_check_command(escpos[i],check_frame) == PR_OK){
-                if(escpos[i].callback != NULL) {
-                    index += escpos[i].callback(&check_frame);
+        if(is_start_a_cmd(check_frame.data[0])) {
+            for(i =0;i<ss;i++)
+            {
+                if(esc_pos_check_command(escpos[i],check_frame) == PR_OK){
+                    if(escpos[i].callback != NULL) {
+                        index += escpos[i].callback(&check_frame);
+                    }
+                    break;
                 }
-                break;
             }
-        }
-        if (i==ss) {
+            if (i==ss) {
             // ESP_LOGW(TAG,"not support this fuction");
+            // while ( (frame.data[index] == 0) && (index<len))
+            // {
+                index+=1;
+            // }
+            }
+        } else {
             index+=1;
         }
+
     }
 }
 
@@ -251,8 +287,9 @@ void esc_pos_check_frame(_frame_typedef frame) {
 0x3fca1214   1b 28 73 04 00 31 41 10  c9   |.(s..1A..|
 */
 #define MIN_RANGE 1000
-#define MAX_RANGE 43800
-extern const char* esc_cmd_73[];
+#define MAX_RANGE 65536
+extern const char* cmd41[];
+extern const char* cmd42[];
 int function_not_parse_01(void *arg){
     ESP_LOGI(TAG,"%s",__func__);
     _frame_typedef *frame = (_frame_typedef *)arg; 
@@ -266,8 +303,21 @@ int function_not_parse_01(void *arg){
     uint16_t code = frame->data[7];
     code = code*256+ frame->data[8];
     if((code >=MIN_RANGE) && (code <=MAX_RANGE)) {
-        size=sprintf(tmp,"{ A%s",esc_cmd_73[code - MIN_RANGE]);
-        size ++;
+        switch (frame->data[6])
+        {
+            case 0x41:
+                size=sprintf(tmp,"{ A%s",cmd41[code - MIN_RANGE]);
+                size ++;
+                break;
+            case 0x42:
+                size=sprintf(tmp,"{ B%s",cmd42[code - MIN_RANGE]);
+                size ++;
+                break;
+            default:
+                ESP_LOGW(TAG,"function_not_parse_01 not found: :%X",frame->data[6]);
+                break;
+        }
+       
     } else {
         ESP_LOGW(TAG,"NOT IMPLEMENT SUB FUN :%X",code);
     }
@@ -289,7 +339,7 @@ int function_not_parse_01(void *arg){
 */
 int function_not_support_4(void *arg)
 {
-    ESP_LOGI(TAG,"%s",__func__); 
+    LOG2(TAG,"%s",__func__); 
     return 4;
 }
 /*[Name] Transmit set values for top/bottom logo printing
@@ -351,9 +401,9 @@ Hex 09
 Decimal 9
 */
 int horizontal_tab(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
-    return 1;
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    return 1; //return 0 to add LF to log file
 }
 
 /*[Name] Print and line feed
@@ -361,9 +411,9 @@ int horizontal_tab(void *arg) {
 Hex 0A
 */
 int print_and_line_feed(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
-    return 1;
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    return 1; //return 0 to add LF to log file
 }
 
 /*
@@ -372,8 +422,9 @@ int print_and_line_feed(void *arg) {
 Hex 0C
 */
 int print_and_return_to_standard_mode(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    //no data need to return
     return 1;
 }
 
@@ -384,8 +435,8 @@ Hex 0D
 Decimal 13
 */
 int print_and_carriage_return(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
     return 1;
 }
 
@@ -396,8 +447,9 @@ Hex 18
 Decimal 24
 */
 int cancel_print_data_in_page_mode(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    //No data need to return
     return 1;
 }
 
@@ -515,8 +567,8 @@ int clear_buffer_s_(void *arg) {   //done
 Hex 1B 0C
 Decimal 27 12*/
 int print_data_in_page_mode(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
     return 2;
 }
 
@@ -556,8 +608,9 @@ Decimal 27 36 nL nH
 0 ≤ nH ≤ 255
 */
 int set_absolute_print_position(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    //NO DATA NEED TO RETURN
     return 4;
 }
 
@@ -616,8 +669,9 @@ Hex 1B 32
 Decimal 27 50
 */
 int select_default_line_spacing(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    //NO DATA RETURN
     return 2;
 }
 
@@ -739,8 +793,9 @@ int turn_double_strike_mode_on_off(void *arg) {
         [Default] N
 */
 int print_and_feed_paper(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    //no data need to return
     return 3;
 }
 
@@ -778,8 +833,9 @@ int select_character_font(void *arg) {
         Decimal 27 82 n
 */
 int select_an_international_character_set(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    //NO DATA NEED TO RETURN
     return 3;
 }
 
@@ -875,8 +931,9 @@ int select_justification(void *arg) {
 */
 int select_paper_sensor_s__to_output_paper_end_signals(void *arg) {
     ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
-    return 3;
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT"); 
+    //NO DATA RETURN
+    return 4;
 }
 
 /*
@@ -1007,8 +1064,9 @@ int transmit_paper_sensor_status(void *arg) {
         Decimal 27 116 n
 */
 int select_character_code_table(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    //NO DATA RETURN
     return 3;
 }
 
@@ -1248,12 +1306,28 @@ int set_user_setup_commands(void *arg) {
 }
 
 /*
-
+    GS ( H pL pH fn m d1 d2 d3 d4 <Function 48>
+    [Format] ASCII GS ( H pL pH fn m d1 d2 d3 d4
+    Hex 1D 28 48 06 00 30 30 d1 d2 d3 d4
+    Decimal 29 40 72 6 0 48 48 d1 d2 d3 d4
 */
 int request_transmission_of_response_or_status(void *arg) {
     ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
-    return 1000;
+    _frame_typedef *newframe = (_frame_typedef *)arg;
+    if(newframe->len <11) {
+        ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+        return newframe->len;
+    }
+    uint8_t rsp[7];
+    rsp[0] = 0x37;
+    rsp[1] = 0x22;
+    rsp[2] = newframe->data[7];
+    rsp[3] = newframe->data[8];
+    rsp[4] = newframe->data[9];
+    rsp[5] = newframe->data[10];
+    rsp[6] = 0x00;
+    epson_response_to_host((uint8_t *)rsp,7);
+    return 11;
 }
 
 
@@ -1280,6 +1354,12 @@ int transmit_related_capacity_NV_memory(void *arg) {
             size= sprintf(tmp,"71%d",epson_nv_get_size());
             size++;
             break;
+        case 2:
+        case 50:
+            ESP_LOGI(TAG," Print the graphics data in the print buffer"); //no data need to return
+            // size= sprintf(tmp,"71%d",epson_nv_get_size());
+            // size++;
+            break;
         case 3:
         case 51:
             ESP_LOGI(TAG,"Transmit the remaining capacity of the NV graphics memory");
@@ -1293,6 +1373,49 @@ int transmit_related_capacity_NV_memory(void *arg) {
     if(size) {
         epson_response_to_host((uint8_t *)tmp,size);
     }
+    return 7;
+}
+
+/*
+[Name] Store the graphics data in the print buffer (raster format).
+    [Format] ASCII GS ( L pL pH m fn a bx by c xL xH yL yH d1...dk
+    Hex 1D 28 4C pL pH 30 70 30 bx by c xL xH yL yH d1...dk
+    Decimal 29 40 76 pL pH 48 112 48 bx by c xL xH yL yH d1...dk
+    ASCII GS 8 L p1 p2 p3 p4 m fn a bx by c xL xH yL yH d1...dk
+    Hex 1D 38 4C p1 p2 p3 p4 30 70 30 bx by c xL xH yL yH d1...dk
+    Decimal 29 56 76 p1 p2 p3 p4 48 112 48 bx by c xL xH yL yH d1...dk
+*/
+int store_the_graphics_data_in_the_print_buffer(void *arg) {
+
+    ESP_LOGI(TAG,"%s",__func__); 
+    _frame_typedef *newframe = (_frame_typedef *)arg;
+    // if(newframe->len < 10) {
+    //     ESP_LOGW(TAG,"LEN NOT FETCH : %d",newframe->len);
+    //     return newframe->len;
+    // }
+    // char tmp[15];
+    // int size = 0; 
+    // switch (newframe->data[6])
+    // {  
+    //     case 00:
+    //     case 48:
+    //         ESP_LOGI(TAG," Transmit the NV graphics memory capacity");
+    //         size= sprintf(tmp,"71%d",epson_nv_get_size());
+    //         size++;
+    //         break;
+    //     case 3:
+    //     case 51:
+    //         ESP_LOGI(TAG,"Transmit the remaining capacity of the NV graphics memory");
+    //         size= sprintf(tmp,"71%d",epson_nv_get_remaining_size());
+    //         size++;
+    //         break;
+    //     default :
+    //         ESP_LOGW(TAG,"NOT IMPLEMENT: %d",newframe->data[6] );
+    //         break;
+    // }
+    // if(size) {
+    //     epson_response_to_host((uint8_t *)tmp,size);
+    // }
     return 7;
 }
 
@@ -1449,8 +1572,8 @@ int set_horizontal_and_vertical_motion_units(void *arg) {
     return 1000;
 }
 int select_cut_mode_and_cut_paper(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    ESP_LOGI(TAG,"%s",__func__);
+    is_cut_command = 1; 
     return 1000;
 }
 int set_print_area_width(void *arg) {
@@ -1492,10 +1615,21 @@ int enable_disable_automatic_status_back__asb_(void *arg) {
     return 3;
     
 }
+
+/*
+
+[Name] Turn smoothing mode on/off
+[Format] ASCII GS b n
+Hex 1D 62 n
+Decima 29 98 n
+[Range] 0 ≤ n ≤ 255
+[Default] n = 0
+*/
 int turn_smoothing_mode_on_off(void *arg) {
-    ESP_LOGI(TAG,"%s",__func__); 
-    ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
-    return 1000;
+    LOG2(TAG,"%s",__func__); 
+    // ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
+    //no data need to return
+    return 3;
 }
 int select_font_for_hri_characters(void *arg) {
     ESP_LOGI(TAG,"%s",__func__); 
