@@ -6,6 +6,7 @@
 #include "string.h"
 #include "define.h"
 
+void systems_fatfs_start();
 FILE *bin_file_creat(char *file_path);
 size_t write_data_to_bin_file(FILE *f,uint8_t *data,size_t dsize);
 int file_close(FILE *f);

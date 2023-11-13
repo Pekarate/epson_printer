@@ -26,6 +26,11 @@
         "utility": "c",
         "stdlib.h": "c",
         "my_uart.h": "c",
-        "usbd_pvt.h": "c"
+        "usbd_pvt.h": "c",
+        "time.h": "c",
+        "sdkconfig.h": "c",
+        "escpos.h": "c",
+        "stat.h": "c",
+        "my_file.h": "c"
     }
 }

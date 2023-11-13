@@ -9,17 +9,21 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+
+#ifdef USB_CDC_ENABLE
 #include "tinyusb.h"
 #include "tusb_cdc_acm.h"
+#include "device/usbd.h"
+#include "device/usbd_pvt.h"
+#include "tusb_msc_storage.h"
+static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
+#endif
+
 #include "sdkconfig.h"
 #include "nvs_flash.h"
 #include "time.h"
 #include <sys/time.h>
-
-#include "device/usbd.h"
-#include "device/usbd_pvt.h"
-
-#include "queue.h"
+#include "freertos/queue.h"
 
 #include "define.h"
 #include "escpos.h"
@@ -28,9 +32,7 @@
 #include <sys/stat.h>
 #include "esp_partition.h"
 #include "esp_check.h"
-#include "tinyusb.h"
-#include "tusb_msc_storage.h"
-#include "tusb_cdc_acm.h"
+
 
 #include "my_timer.h"
 #include "my_uart.h"
@@ -42,9 +44,12 @@
 extern uint8_t is_cut_command;
 
 QueueHandle_t xStructQueue = NULL;
+QueueHandle_t xStructQueuelog = NULL;
+
+
 extern void set_dsr(uint8_t itf, bool value);
 static const char *TAG = "example";
-static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
+
 
 
 
@@ -94,7 +99,7 @@ void epson_response_to_host(uint8_t *buf,uint16_t rx_size){
 
 
 
-
+#ifdef USB_CDC_ENABLE
 void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
 {
     /* initialization */
@@ -117,7 +122,7 @@ void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
     // tinyusb_cdcacm_write_queue(itf, buf, rx_size);
     // tinyusb_cdcacm_write_flush(itf, 0);
 }
-
+#endif
 // void set_dsr(uint8_t itf, bool value) {
 
 //     printf("HOANG: %s %d\n",__func__,value);
@@ -139,7 +144,7 @@ void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
 //     usbd_edpt_xfer(TUD_OPT_RHPORT, p_cdc->ep_notif, packet, 10);
 
 // }
-
+#ifdef USB_CDC_ENABLE
 uint8_t XON = 0x11;
 int dtr = 0;
 void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event)
@@ -207,10 +212,49 @@ static void _mount(void)
     }
     return;
 }
-
+#endif
 extern void my_wifi_start(void);
+
+// Bộ đệm log trong bộ nhớ RAM
+#define LOG_BUFFER_SIZE 1024
+static char log_buffer[LOG_BUFFER_SIZE];
+
+void LL_log_add_to_queue(uint8_t *data,uint16_t len)
+{
+    _frame_typedef newframe;
+    newframe.data = (uint8_t *)malloc(len+1);
+    memcpy(newframe.data,data,len);
+    newframe.len = len;
+    if(!uxQueueSpacesAvailable(xStructQueuelog)) {  //free fist emplement
+        _frame_typedef tmpframe;
+        if( xQueueReceive( xStructQueuelog,&(tmpframe),( TickType_t ) 0 ) == pdPASS )
+        {  
+            
+        }
+        free(tmpframe.data);
+    }
+    xQueueSend(xStructQueuelog,( void * ) &newframe,( TickType_t ) 100 );
+}
+
+int system_log_message_route(const char* fmt, va_list tag)
+{
+    int s = vsnprintf(log_buffer,LOG_BUFFER_SIZE, fmt, tag);
+    LL_log_add_to_queue((uint8_t *) log_buffer,s);
+    // uart_write_bytes(UART_PORT_NUM,log_print_buffer,s);
+    // ESP_ERROR_CHECK(uart_wait_tx_done(UART_PORT_NUM, 100));
+    // send_to_queue(log_print_buffer);
+    // free(log_print_buffer);
+    return s;//vprintf(fmt, tag);
+}
 void app_main(void)
 {
+
+    xStructQueuelog = xQueueCreate(
+                         /* The number of items the queue can hold. */
+                         30,
+                         /* Size of each item is big enough to hold the
+                         whole structure. */
+                         sizeof( _frame_typedef) );
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -218,9 +262,16 @@ void app_main(void)
       ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-    // my_wifi_start();
-    ESP_LOGI(TAG, "Initializing storage...");
+    vTaskDelay(100);
+    my_uart_start();
+    uart_write_bytes(UART_PORT_NUM,"helloworld",11);
+    esp_log_set_vprintf(system_log_message_route);
+    systems_fatfs_start();
 
+    my_wifi_start();
+    return;
+
+#ifdef USB_CDC_ENABLE
     static wl_handle_t wl_handle = WL_INVALID_HANDLE;
     ESP_ERROR_CHECK(storage_init_spiflash(&wl_handle));
 
@@ -252,28 +303,30 @@ void app_main(void)
 
     ESP_ERROR_CHECK(tusb_cdc_acm_init(&acm_cfg));
     /* the second way to register a callback */
-    ESP_ERROR_CHECK(tinyusb_cdcacm_register_callback(
+  ESP_ERROR_CHECK(tinyusb_cdcacm_register_callback(
                         TINYUSB_CDC_ACM_0,
                         CDC_EVENT_LINE_STATE_CHANGED,
                         &tinyusb_cdc_line_state_changed_callback));
     
     ESP_LOGI(TAG, "USB initialization DONE");
+    if (tinyusb_msc_storage_in_use_by_usb_host()) {
+        ESP_LOGE(TAG, "storage exposed over USB. Application can't write to storage.");
+        ESP_LOGE(TAG, "Please eject usb storage in your computer");
+    }    
+#endif
     xStructQueue = xQueueCreate(
                          /* The number of items the queue can hold. */
                          30,
                          /* Size of each item is big enough to hold the
                          whole structure. */
                          sizeof( _frame_typedef) );
-    my_uart_start();
+    
     my_timer_start();
     my_gpio_init();
     vTaskDelay(100);
     // set_dsr(0,1);
     _frame_typedef newframe;
-    if (tinyusb_msc_storage_in_use_by_usb_host()) {
-        ESP_LOGE(TAG, "storage exposed over USB. Application can't write to storage.");
-        ESP_LOGE(TAG, "Please eject usb storage in your computer");
-    }            
+        
     FILE *stream = NULL;
     struct timeval tv_now;
     // gettimeofday(&tv_now, NULL);
@@ -286,16 +339,18 @@ void app_main(void)
 
             ESP_LOG_BUFFER_HEXDUMP("RECV: ", newframe.data, newframe.len, ESP_LOG_INFO);
             esc_pos_check_frame(newframe);
+            #ifdef USB_CDC_ENABLE
             if (tinyusb_msc_storage_in_use_by_usb_host()) {
                 ESP_LOGE(TAG, "storage exposed over USB. Application can't write to storage.");
             }else {
+            #endif
                 if(stream == NULL) 
                 {
                     gettimeofday(&tv_now, NULL);
                     int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
                     ESP_LOGW(TAG, "time_us: %llu",time_us);
                     char file_name[40];
-                    sprintf(file_name,"/data/raw%3d.bin",(int)(time_us%1000));
+                    sprintf(file_name,"raw%3d.bin",(int)(time_us%1000));
                     stream =bin_file_creat(file_name);
                 }
                 if(stream) {
@@ -303,7 +358,9 @@ void app_main(void)
                         ESP_LOGE(TAG, "write to file error");
                     }
                 } 
+            #ifdef USB_CDC_ENABLE
             }
+            #endif
             if(is_cut_command) {
                 is_cut_command =0;
                 file_close(stream);
