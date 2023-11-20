@@ -48,7 +48,7 @@ QueueHandle_t xStructQueuelog = NULL;
 
 
 extern void set_dsr(uint8_t itf, bool value);
-static const char *TAG = "example";
+static const char *TAG = "MAIN";
 
 
 
@@ -244,12 +244,19 @@ int system_log_message_route(const char* fmt, va_list tag)
     // ESP_ERROR_CHECK(uart_wait_tx_done(UART_PORT_NUM, 100));
     // send_to_queue(log_print_buffer);
     // free(log_print_buffer);
-    return s;//vprintf(fmt, tag);
+    return vprintf(fmt, tag);
 }
 void app_main(void)
 {
 
     xStructQueuelog = xQueueCreate(
+                         /* The number of items the queue can hold. */
+                         30,
+                         /* Size of each item is big enough to hold the
+                         whole structure. */
+                         sizeof( _frame_typedef) );
+
+    xStructQueue = xQueueCreate(
                          /* The number of items the queue can hold. */
                          30,
                          /* Size of each item is big enough to hold the
@@ -262,14 +269,18 @@ void app_main(void)
       ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-    vTaskDelay(100);
     my_uart_start();
-    uart_write_bytes(UART_PORT_NUM,"helloworld",11);
-    esp_log_set_vprintf(system_log_message_route);
+    // esp_log_set_vprintf(system_log_message_route);
     systems_fatfs_start();
 
-    my_wifi_start();
-    return;
+    // my_wifi_start();
+    int cnt = 0;
+    // while (1)
+    // {
+    //     ESP_LOGI(TAG, "cnt: %d",cnt++);
+    //     vTaskDelay(20);
+    // }
+    // return;
 
 #ifdef USB_CDC_ENABLE
     static wl_handle_t wl_handle = WL_INVALID_HANDLE;
@@ -314,14 +325,9 @@ void app_main(void)
         ESP_LOGE(TAG, "Please eject usb storage in your computer");
     }    
 #endif
-    xStructQueue = xQueueCreate(
-                         /* The number of items the queue can hold. */
-                         30,
-                         /* Size of each item is big enough to hold the
-                         whole structure. */
-                         sizeof( _frame_typedef) );
+
     
-    my_timer_start();
+    // my_timer_start();
     my_gpio_init();
     vTaskDelay(100);
     // set_dsr(0,1);
@@ -329,51 +335,51 @@ void app_main(void)
         
     FILE *stream = NULL;
     struct timeval tv_now;
-    // gettimeofday(&tv_now, NULL);
-    // int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
-    // ESP_LOGW(TAG, "time_us: %llu",time_us);
+    size_t oldheapSize = 0xFFFFFFFF;
+    size_t heapSize = xPortGetFreeHeapSize();
+    
     while (1)
     {
+        heapSize = xPortGetFreeHeapSize();
+        if( oldheapSize > heapSize) {
+            oldheapSize= heapSize;
+            ESP_LOGW(TAG, "xPortGetFreeHeapSize: %u",oldheapSize);
+        }
         if( xQueueReceive( xStructQueue,&(newframe),( TickType_t ) 10 ) == pdPASS )
         {   
-
+            // ESP_LOGW(TAG, "RECV : %d",newframe.len);
             ESP_LOG_BUFFER_HEXDUMP("RECV: ", newframe.data, newframe.len, ESP_LOG_INFO);
             esc_pos_check_frame(newframe);
-            #ifdef USB_CDC_ENABLE
-            if (tinyusb_msc_storage_in_use_by_usb_host()) {
-                ESP_LOGE(TAG, "storage exposed over USB. Application can't write to storage.");
-            }else {
-            #endif
-                if(stream == NULL) 
-                {
-                    gettimeofday(&tv_now, NULL);
-                    int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
-                    ESP_LOGW(TAG, "time_us: %llu",time_us);
-                    char file_name[40];
-                    sprintf(file_name,"raw%3d.bin",(int)(time_us%1000));
-                    stream =bin_file_creat(file_name);
-                }
-                if(stream) {
-                    if(write_data_to_bin_file(stream,newframe.data,newframe.len) != newframe.len) {
-                        ESP_LOGE(TAG, "write to file error");
-                    }
-                } 
-            #ifdef USB_CDC_ENABLE
-            }
-            #endif
-            if(is_cut_command) {
-                is_cut_command =0;
-                file_close(stream);
-                stream = NULL;
-            }
+            // #ifdef USB_CDC_ENABLE
+            // if (tinyusb_msc_storage_in_use_by_usb_host()) {
+            //     ESP_LOGE(TAG, "storage exposed over USB. Application can't write to storage.");
+            // }else {
+            // #endif
+            //     if(stream == NULL) 
+            //     {
+            //         gettimeofday(&tv_now, NULL);
+            //         int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
+            //         ESP_LOGW(TAG, "time_us: %llu",time_us);
+            //         char file_name[40];
+            //         sprintf(file_name,"raw%3d.bin",(int)(time_us%1000));
+            //         stream =bin_file_creat(file_name);
+            //     }
+            //     if(stream) {
+            //         if(write_data_to_bin_file(stream,newframe.data,newframe.len) != newframe.len) {
+            //             ESP_LOGE(TAG, "write to file error");
+            //         }
+            //     } 
+            // #ifdef USB_CDC_ENABLE
+            // }
+            // #endif
+            // if(is_cut_command) {
+            //     is_cut_command =0;
+            //     file_close(stream);
+            //     stream = NULL;
+            // }
             free(newframe.data);
         }
         // vTaskDelay(1);
     }
     
 }
-
-
-/*I (1718774) example: 0x3fca1d2c   00 00 00 00 1b 3d 01                              |.....=.|
-W (1718774) ESCPOS: not support this fuction
-I (1719304) example: 0x3fca1d2c   1b 3d 01 10 04 01 10 14  07 01                    |.=........|*/

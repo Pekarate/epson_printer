@@ -225,7 +225,6 @@ int is_start_a_cmd(uint8_t bytestart)
         case ENQ :      //0x05:
         case DC4 :      //0x14:
         case ESC :      //0x1B:
-        case SP  :      //0x20:
         case FS  :      //0x1C:
         case GS  :      //0x1D:
             return 1;
@@ -268,7 +267,7 @@ void esc_pos_check_frame(_frame_typedef frame) {
                 }
             }
             if (i==ss) {
-            // ESP_LOGW(TAG,"not support this fuction");
+                ESP_LOGE(TAG,"len command not enough : %x ",check_frame.data[0]);
             // while ( (frame.data[index] == 0) && (index<len))
             // {
                 index+=1;
@@ -289,7 +288,7 @@ void esc_pos_check_frame(_frame_typedef frame) {
 #define MIN_RANGE 1000
 #define MAX_RANGE 65536
 extern const char* cmd41[];
-extern const char* cmd42[];
+// extern const char* cmd42[];
 int function_not_parse_01(void *arg){
     ESP_LOGI(TAG,"%s",__func__);
     _frame_typedef *frame = (_frame_typedef *)arg; 
@@ -305,14 +304,14 @@ int function_not_parse_01(void *arg){
     if((code >=MIN_RANGE) && (code <=MAX_RANGE)) {
         switch (frame->data[6])
         {
-            case 0x41:
-                size=sprintf(tmp,"{ A%s",cmd41[code - MIN_RANGE]);
-                size ++;
-                break;
-            case 0x42:
-                size=sprintf(tmp,"{ B%s",cmd42[code - MIN_RANGE]);
-                size ++;
-                break;
+            // case 0x41:
+            //     size=sprintf(tmp,"{ A%s",cmd41[code - MIN_RANGE]);
+            //     size ++;
+            //     break;
+            // case 0x42:
+            //     size=sprintf(tmp,"{ B%s",cmd42[code - MIN_RANGE]);
+            //     size ++;
+            //     break;
             default:
                 ESP_LOGW(TAG,"function_not_parse_01 not found: :%X",frame->data[6]);
                 break;
@@ -1336,6 +1335,8 @@ int select_print_control_method_s_(void *arg) {
     ESP_LOGW(TAG,"FUNCTION NOT IMPLEMENT");
     return 1000;
 }
+
+//{.keysize = 6, .key = {GS,'(','L',0x02,0x00,0x30}         ,.callback =transmit_related_capacity_NV_memory},
 int transmit_related_capacity_NV_memory(void *arg) {
 
     ESP_LOGI(TAG,"%s",__func__); 
@@ -1350,19 +1351,19 @@ int transmit_related_capacity_NV_memory(void *arg) {
     {  
         case 00:
         case 48:
-            ESP_LOGI(TAG," Transmit the NV graphics memory capacity");
+            ESP_LOGI(TAG,"sub: Transmit the NV graphics memory capacity");
             size= sprintf(tmp,"71%d",epson_nv_get_size());
             size++;
             break;
         case 2:
         case 50:
-            ESP_LOGI(TAG," Print the graphics data in the print buffer"); //no data need to return
+            ESP_LOGI(TAG,"sub: Print the graphics data in the print buffer"); //no data need to return
             // size= sprintf(tmp,"71%d",epson_nv_get_size());
             // size++;
             break;
         case 3:
         case 51:
-            ESP_LOGI(TAG,"Transmit the remaining capacity of the NV graphics memory");
+            ESP_LOGI(TAG,"sub: Transmit the remaining capacity of the NV graphics memory");
             size= sprintf(tmp,"71%d",epson_nv_get_remaining_size());
             size++;
             break;

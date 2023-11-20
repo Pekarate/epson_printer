@@ -13,7 +13,7 @@
 #include "driver/gpio.h"
 #include "sdkconfig.h"
 #include "esp_log.h"
-
+#include "hal/uart_hal.h"
 #include "my_uart.h"
 /**
  * This is an example which echos any data it receives on configured UART back to the sender,
@@ -39,6 +39,7 @@ static void uart_event_task(void *pvParameters)
     uart_event_t event;
     size_t buffered_size;
     // uint8_t* dtmp = (uint8_t*) malloc(RD_BUF_SIZE);
+    size_t  uart_size = 0;
     for(;;) {
         //Waiting for UART event.
         if(xQueueReceive(uart_queue, (void * )&event, (TickType_t)portMAX_DELAY)) {
@@ -50,6 +51,14 @@ static void uart_event_task(void *pvParameters)
                 other types of events. If we take too much time on data event, the queue might
                 be full.*/
                 case UART_DATA:
+                    uart_size +=event.size;
+                    if(!event.timeout_flag) {
+                        // ESP_LOGE(TAG, "event.timeout_flag: :%d",event.size);
+                    } else {
+                        
+                        ESP_LOGE(TAG, "total uart size: %u",uart_size);
+                        uart_size = 0;
+                    }
                     uint8_t *bufer = (uint8_t *)malloc(event.size+1);
                     if(bufer)
                     {
@@ -132,17 +141,23 @@ void my_uart_start(void)
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
         .source_clk = UART_SCLK_DEFAULT,
+        .rx_flow_ctrl_thresh = 2,
     };
     int intr_alloc_flags = 0;
 
-#if CONFIG_UART_ISR_IN_IRAM
-    intr_alloc_flags = ESP_INTR_FLAG_IRAM;
-#endif
 
-    ESP_ERROR_CHECK(uart_driver_install(UART_PORT_NUM, BUF_SIZE * 2,BUF_SIZE,20, &uart_queue, 0));
+    ESP_ERROR_CHECK(uart_driver_install(UART_PORT_NUM, BUF_SIZE * 2,BUF_SIZE,UART_QUEUE_LENGTH, &uart_queue, 0));
     ESP_ERROR_CHECK(uart_param_config(UART_PORT_NUM, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(UART_PORT_NUM, ECHO_TEST_TXD, ECHO_TEST_RXD, ECHO_TEST_RTS, ECHO_TEST_CTS));
-    uart_pattern_queue_reset(UART_PORT_NUM, 20);
+
+
+    // Set timeout for TOUT interrupt (T3.5 modbus time)
+    esp_err_t xErr = ESP_OK;
+    xErr = uart_set_rx_timeout(UART_PORT_NUM, 3);
+    if(xErr != ESP_OK)
+            ESP_LOGI(TAG,"mb serial set rx timeout failure, uart_set_rx_timeout() returned (0x%x).", (int)xErr);
+
+    uart_pattern_queue_reset(UART_PORT_NUM, UART_QUEUE_LENGTH);
     uart_flush(UART_PORT_NUM);
-    xTaskCreate(uart_event_task, "uart_event_task", 2048, NULL, 12, NULL);
+    xTaskCreate(uart_event_task, "uart_event_task", 4096, NULL, 12, NULL);
 }
