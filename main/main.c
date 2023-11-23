@@ -264,7 +264,7 @@ void app_main(void)
                          /* Size of each item is big enough to hold the
                          whole structure. */
                          sizeof( _frame_typedef) );
-    my_uart_start();
+    // my_uart_start();
     // my_timer_start();
     // my_gpio_init();
     vTaskDelay(100);
@@ -295,7 +295,7 @@ void app_main(void)
                     int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
                     // ESP_LOGW(TAG, "time_us: %llu",time_us);
                     char file_name[40];
-                    sprintf(file_name,"/data/raw%4d.bin",(int)(time_us%10000));
+                    sprintf(file_name,"/data/raw%04d.bin",(int)(time_us%10000));
                     stream =bin_file_creat(file_name);
                 }
                 if(stream) {
